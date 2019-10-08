@@ -6,25 +6,17 @@ void PrintMap(Map* map);
 int main()
 {
 	int a(1), b(1), c(2), d(3), e(4), f(5), g(2), h(6);
-	int* ptr_c1 = &a;
-	int* ptr_c2 = &g;
-	int* ptr_r = &b;
-	int* ptr_r2 = &c;
-	int* ptr_r3 = &d;
-	int* ptr_r4 = &e;
-	int* ptr_r5 = &f;
-	int* ptr_r6 = &h;
 	
 	Map* game_map = new Map();
-	Continent* continent1 = new Continent(ptr_c1);
-	Continent* continent2 = new Continent(ptr_c2);
+	Continent* continent1 = new Continent(&a);
+	Continent* continent2 = new Continent(&g);
 
-	Region* region1 = new Region(ptr_r, continent1);
-	Region* region2 = new Region(ptr_r2, continent1);
-	Region* region3 = new Region(ptr_r3, continent1);
-	Region* region4 = new Region(ptr_r4, continent1);
-	Region* region5 = new Region(ptr_r5, continent1);
-	Region* region6 = new Region(ptr_r6, continent2);
+	Region* region1 = new Region(&b, continent1);
+	Region* region2 = new Region(&c, continent1);
+	Region* region3 = new Region(&d, continent1);
+	Region* region4 = new Region(&e, continent1);
+	Region* region5 = new Region(&f, continent1);
+	Region* region6 = new Region(&h, continent2);
 
 	game_map->AddRegion(region1, continent1);
 	game_map->AddRegion(region2, continent1);
@@ -54,6 +46,7 @@ int main()
 	return 0;
 }
 
+// Displays entire map 
 void PrintMap(Map* map) {
 	
 	std::cout << std::endl;
@@ -61,7 +54,6 @@ void PrintMap(Map* map) {
 
 	for (auto cit = continents.begin(); cit != continents.end(); cit++)
 	{
-		/**/
 		Continent continent = cit->second;
 		int key = cit->first;
 
@@ -87,7 +79,5 @@ void PrintMap(Map* map) {
 			
 			std::cout << std::endl;
 		}
-		/**/
 	}
-
 }
