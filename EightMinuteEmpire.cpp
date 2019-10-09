@@ -13,6 +13,7 @@ int main()
 {
 	char input = 'a';
 
+	//Game loop
 	while (input != 'q') {
 		std::cout << "Enter one of the following characters:\n"
 			<< "p to play with 2 CPUs\n"
@@ -33,10 +34,12 @@ int main()
 	return 0;
 }
 
+// Function for normal gameplay
 void UserPlaysDriver() {
+
+	// Create players
 	Player* cpu1 = new Player("CPU1", 15);
 	Player* cpu2 = new Player("CPU2", 20);
-
 	Player* player = new Player();
 	string name;
 	int age, bid;
@@ -53,6 +56,7 @@ void UserPlaysDriver() {
 
 	PrintPlayers(players);
 
+	// Get bids from players
 	std::cout << "Please enter your bid (0-10)";
 	std::cin >> bid;
 
@@ -62,17 +66,21 @@ void UserPlaysDriver() {
 
 	PrintBids(players);
 
+	// Calculate the starting player
 	Player* startingPlayer = GetStartingPlayer(players);
 
 	cout << "Starting player: " << startingPlayer->GetName() << "\n\n";
 
+	// Free up memory
 	delete cpu1, cpu2, player;
 	cpu1 = cpu2 = player = NULL;
 	players.clear();
 	players.shrink_to_fit();
 }
 
+// Function for test driver according to assignment specs
 void AutoDriver() {
+	// Create players
 	vector<Player*> cpus = { 
 		new Player("CPU1", 15),
 		new Player("CPU2", 25),
@@ -82,6 +90,7 @@ void AutoDriver() {
 
 	PrintPlayers(cpus);
 
+	// Set player bids according to assignment specs
 	cpus[0]->GetBiddingFacility()->SetBid(1);
 	cpus[1]->GetBiddingFacility()->SetBid(2);
 	cpus[2]->GetBiddingFacility()->SetBid(3);
@@ -89,10 +98,12 @@ void AutoDriver() {
 
 	PrintBids(cpus);
 
+	// Calculate winner
 	Player* startingPlayer = GetStartingPlayer(cpus);
 
 	cout << "Starting player: " << startingPlayer->GetName() << "\n\n\n";
 
+	// Set player bids according to assignment specs
 	cpus[0]->GetBiddingFacility()->SetBid(3);
 	cpus[1]->GetBiddingFacility()->SetBid(7);
 	cpus[2]->GetBiddingFacility()->SetBid(7);
@@ -100,10 +111,12 @@ void AutoDriver() {
 
 	PrintBids(cpus);
 
+	// Calculate winner
 	startingPlayer = GetStartingPlayer(cpus);
 
 	cout << "Starting player: " << startingPlayer->GetName() << "\n\n\n";
 
+	// Set player bids according to assignment specs
 	cpus[0]->GetBiddingFacility()->SetBid(0);
 	cpus[1]->GetBiddingFacility()->SetBid(0);
 	cpus[2]->GetBiddingFacility()->SetBid(0);
@@ -111,10 +124,12 @@ void AutoDriver() {
 
 	PrintBids(cpus);
 
+	// Calculate winner
 	startingPlayer = GetStartingPlayer(cpus);
 
 	cout << "Starting player: " << startingPlayer->GetName() << "\n\n\n";
 
+	// Free up memory
 	for (unsigned int i = 0; i < cpus.size(); i++) {
 		delete cpus[i];
 		cpus[i] = NULL;
@@ -124,19 +139,21 @@ void AutoDriver() {
 	cpus.shrink_to_fit();
 }
 
-
+// Print list of players
 void PrintPlayers(vector<Player*> players) {
 	for (unsigned int i = 0; i < players.size(); i++) {
 		cout << players[i]->GetName() << " age: " << players[i]->GetAge() << "\n";
 	}
 }
 
+// Print list of player bids
 void PrintBids(vector<Player*> players) {
 	for (unsigned int i = 0; i < players.size(); i++) {
 		cout << players[i]->GetName() << " bid: " << players[i]->GetBiddingFacility()->GetBid() << "\n";
 	}
 }
 
+// Calculate starting player using BiddingDriver
 Player* GetStartingPlayer(vector<Player*> players) {
 	BiddingDriver* biddingDriver = new BiddingDriver();
 	Player* startingPlayer = biddingDriver->CalculateWinner(players);

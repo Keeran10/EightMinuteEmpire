@@ -3,8 +3,10 @@
 
 class BiddingDriver {
 	public:
+		// Constructors & Destructor
 		BiddingDriver();
 		~BiddingDriver();
 
+		// Functions
 		Player* CalculateWinner(vector<Player*> players);
 };
