@@ -68,6 +68,8 @@ void UserPlaysDriver() {
 
 	delete cpu1, cpu2, player;
 	cpu1 = cpu2 = player = NULL;
+	players.clear();
+	players.shrink_to_fit();
 }
 
 void AutoDriver() {
@@ -112,6 +114,14 @@ void AutoDriver() {
 	startingPlayer = GetStartingPlayer(cpus);
 
 	cout << "Starting player: " << startingPlayer->GetName() << "\n\n\n";
+
+	for (unsigned int i = 0; i < cpus.size(); i++) {
+		delete cpus[i];
+		cpus[i] = NULL;
+	}
+
+	cpus.clear();
+	cpus.shrink_to_fit();
 }
 
 

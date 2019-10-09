@@ -5,7 +5,9 @@ class BiddingFacility {
 	public:
 		BiddingFacility();
 		~BiddingFacility();
-		int GetBid() { return bid; };
-		void SetBid(int bid) { this->bid = bid; }
+
+		inline int GetBid() { return bid; };
+		inline void SetBid(int bid) { this->bid = bid; }
+
 		void RandomizeBid();
 };

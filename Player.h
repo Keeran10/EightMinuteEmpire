@@ -15,13 +15,13 @@ class Player {
 		~Player();
 		Player(string name, int age);
 
-		int GetCoins() { return coins; }
-		void SetCoins(int coins) { this->coins = coins; }
-		int GetAge() { return age; }
-		void SetAge(int age) { this->age = age; }
-		string GetName() { return name; }
-		void SetName(string name) { this->name = name; }
-		BiddingFacility* GetBiddingFacility() { return biddingFacility; }
+		inline int GetCoins() { return coins; }
+		inline void SetCoins(int coins) { this->coins = coins; }
+		inline int GetAge() { return age; }
+		inline void SetAge(int age) { this->age = age; }
+		inline string GetName() { return name; }
+		inline void SetName(string name) { this->name = name; }
+		inline BiddingFacility* GetBiddingFacility() { return biddingFacility; }
 
 		void PayCoin();
 		void PlaceNewArmies();

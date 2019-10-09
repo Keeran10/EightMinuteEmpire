@@ -12,10 +12,10 @@ BiddingDriver::~BiddingDriver()
 Player* BiddingDriver::CalculateWinner(vector<Player*> players)
 {
 	Player* winningPlayer = players[0];
-
-	for (unsigned int i = 1; i < players.size(); i++) {
-
-		Player* runnerUp = players[i];
+	Player* runnerUp;
+	for (unsigned int i = 1; i < players.size(); i++) 
+	{
+		runnerUp = players[i];
 		if (winningPlayer->GetBiddingFacility()->GetBid() < runnerUp->GetBiddingFacility()->GetBid()) {
 			winningPlayer = runnerUp;
 		}
