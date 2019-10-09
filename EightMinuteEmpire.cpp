@@ -11,16 +11,23 @@ Player* GetStartingPlayer(vector<Player*> players);
 
 int main()
 {
-	char input;
+	char input = 'a';
 
-	std::cout << "Enter p to play or d for driver test\n";
-	std::cin >> input;
+	while (input != 'q') {
+		std::cout << "Enter one of the following characters:\n"
+			<< "p to play with 2 CPUs\n"
+			<< "d for driver test\n"
+			<< "q to quit\n\n";
 
-	if (input == 'p') {
-		UserPlaysDriver();
-	}
-	else if (input == 'd') {
-		AutoDriver();
+		std::cin >> input;
+
+		if (input == 'p') {
+			UserPlaysDriver();
+		}
+		else if (input == 'd') {
+			AutoDriver();
+		}
+
 	}
 
 	return 0;
@@ -57,7 +64,7 @@ void UserPlaysDriver() {
 
 	Player* startingPlayer = GetStartingPlayer(players);
 
-	cout << "Starting player: " << startingPlayer->GetName();
+	cout << "Starting player: " << startingPlayer->GetName() << "\n\n";
 
 	delete cpu1, cpu2, player;
 	cpu1 = cpu2 = player = NULL;
