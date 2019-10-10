@@ -43,7 +43,6 @@ void UserPlaysDriver() {
 	Player* player = new Player();
 	string name;
 	int age, bid;
-	const int NUMBER_OF_PLAYERS = 3;
 
 	std::cout << "\n\nPlease enter the player name\n";
 	std::cin >> name;
@@ -51,6 +50,7 @@ void UserPlaysDriver() {
 	std::cout << "Please enter the player age\n";
 	std::cin >> age;
 	player->SetAge(age);
+	std::cout << "\n";
 
 	vector<Player*> players = { player, cpu1, cpu2 };
 
@@ -89,6 +89,7 @@ void AutoDriver() {
 	};
 
 	PrintPlayers(cpus);
+	cout << "\n";
 
 	// Set player bids according to assignment specs
 	cpus[0]->GetBiddingFacility()->SetBid(1);

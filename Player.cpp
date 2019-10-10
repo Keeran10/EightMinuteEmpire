@@ -1,13 +1,13 @@
 #include "Player.h"
 
 // Default Constructor for PCs
-Player::Player() : name("player"), age(0), coins(10), cubes(14), discs(3)
+Player::Player() : name("player"), age(new int(0)), coins(new int(10)), cubes(new int(14)), discs(new int(3))
 {
 	biddingFacility = new BiddingFacility();
 }
 
 // Constructor for NPCs
-Player::Player(string name, int age) : name(name), age(age), coins(10), cubes(14), discs(3)
+Player::Player(string name, int age) : name(name), age(new int(age)), coins(new int(10)), cubes(new int(14)), discs(new int(3))
 {
 	biddingFacility = new BiddingFacility();
 }
@@ -15,8 +15,7 @@ Player::Player(string name, int age) : name(name), age(age), coins(10), cubes(14
 // Default Destructor
 Player::~Player()
 {
-	delete biddingFacility;
-	biddingFacility = NULL;
+	delete age, coins, cubes, discs, biddingFacility;
 }
 
 void Player::PayCoin()
