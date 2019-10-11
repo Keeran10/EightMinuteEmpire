@@ -1,4 +1,5 @@
 #include "Player.h"
+#include <iostream>
 
 // Default Constructor for PCs
 Player::Player() : name("player"), age(new int(0)), coins(new int(10)), cubes(new int(14)), discs(new int(3))
@@ -18,27 +19,55 @@ Player::~Player()
 	delete age, coins, cubes, discs, biddingFacility;
 }
 
-void Player::PayCoin()
+string Player::PayCoin()
 {
+	return "PayCoin() implementation";
 }
 
-void Player::PlaceNewArmies()
+string Player::PlaceNewArmies()
 {
+	return "PlaceNewArmies() implementation";
 }
 
-void Player::MoveArmies()
+string Player::MoveArmies()
 {
+	return "MoveArmies() implementation";
 }
 
-void Player::MoveOverLand()
+string Player::MoveOverLand()
 {
+	return "MoveOverLand() implementation";
 }
 
-void Player::BuildCity()
+string Player::BuildCity()
 {
+	return "BuildCity() implementation";
 }
 
-void Player::DestroyArmy()
+string Player::DestroyArmy()
 {
+	return "DestroyArmy() implementation";
+}
+
+void Player::PlayerDriverGameLoop()
+{
+	Player* player = new Player();
+
+	std::cout << player->PayCoin() << "\n";
+	std::cout << player->PlaceNewArmies() << "\n";
+	std::cout << player->MoveArmies() << "\n";
+	std::cout << player->MoveOverLand() << "\n";
+	std::cout << player->BuildCity() << "\n";
+	std::cout << player->DestroyArmy() << "\n";
+
+	vector<string> playerCountries0 = player->GetCountriesVector();
+	playerCountries0.push_back("country1");
+	playerCountries0.push_back("country2");
+	playerCountries0.push_back("country3");
+
+	vector<string> playerCountries = player->GetCountriesVector();
+	for (unsigned int i = 0; i < playerCountries.size(); i++) {
+		cout << "Player country " << i << ": " << playerCountries[i] << "\n";
+	}
 }
 

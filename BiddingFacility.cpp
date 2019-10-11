@@ -17,5 +17,5 @@ BiddingFacility::~BiddingFacility()
 // Generate a random bid and set it to variable
 void BiddingFacility::RandomizeBid()
 {
-	bid = rand() % 11;
+	*bid = int(rand() % 11);
 }

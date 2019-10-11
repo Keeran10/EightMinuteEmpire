@@ -9,4 +9,6 @@ class BiddingDriver {
 
 		// Functions
 		Player* CalculateWinner(vector<Player*> players);
+
+		static void BiddingDriverGameLoop();
 };

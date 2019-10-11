@@ -1,5 +1,6 @@
 #include <vector>
 #include "BiddingDriver.h"
+#include "DriverHelper.h"
 
 // Default Constructor
 BiddingDriver::BiddingDriver()
@@ -33,4 +34,66 @@ Player* BiddingDriver::CalculateWinner(vector<Player*> players)
 		}
 	}
 	return winningPlayer;
+}
+
+void BiddingDriver::BiddingDriverGameLoop()
+{
+	// Create players
+	vector<Player*> cpus = {
+		new Player("CPU1", 15),
+		new Player("CPU2", 25),
+		new Player("CPU3", 20),
+		new Player("CPU4", 30)
+	};
+
+	PrintPlayers(cpus);
+	cout << "\n";
+
+	// Set player bids according to assignment specs
+	cpus[0]->GetBiddingFacility()->SetBid(1);
+	cpus[1]->GetBiddingFacility()->SetBid(2);
+	cpus[2]->GetBiddingFacility()->SetBid(3);
+	cpus[3]->GetBiddingFacility()->SetBid(4);
+
+	PrintBids(cpus);
+
+	// Calculate winner
+	Player* startingPlayer = GetStartingPlayer(cpus);
+
+	cout << "Starting player: " << startingPlayer->GetName() << "\n\n\n";
+
+	// Set player bids according to assignment specs
+	cpus[0]->GetBiddingFacility()->SetBid(3);
+	cpus[1]->GetBiddingFacility()->SetBid(7);
+	cpus[2]->GetBiddingFacility()->SetBid(7);
+	cpus[3]->GetBiddingFacility()->SetBid(1);
+
+	PrintBids(cpus);
+
+	// Calculate winner
+	startingPlayer = GetStartingPlayer(cpus);
+
+	cout << "Starting player: " << startingPlayer->GetName() << "\n\n\n";
+
+	// Set player bids according to assignment specs
+	cpus[0]->GetBiddingFacility()->SetBid(0);
+	cpus[1]->GetBiddingFacility()->SetBid(0);
+	cpus[2]->GetBiddingFacility()->SetBid(0);
+	cpus[3]->GetBiddingFacility()->SetBid(0);
+
+	PrintBids(cpus);
+
+	// Calculate winner
+	startingPlayer = GetStartingPlayer(cpus);
+
+	cout << "Starting player: " << startingPlayer->GetName() << "\n\n\n";
+
+	// Free up memory
+	for (unsigned int i = 0; i < cpus.size(); i++) {
+		delete cpus[i];
+		cpus[i] = NULL;
+	}
+
+	cpus.clear();
+	cpus.shrink_to_fit();
 }
