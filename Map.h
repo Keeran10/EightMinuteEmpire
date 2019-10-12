@@ -60,7 +60,7 @@ public:
 	std::map<int, Continent> GetContinents();
 	void AddRegion(Region* region);
 	void AddContinent(Continent* continent);
-	Region GetRegion(int region_id);
+	Region* GetRegion(int region_id);
 	void PrintMap();
 };
 
@@ -74,3 +74,6 @@ inline int Continent::GetId() { return *id; }
 inline int* Continent::GetCId() { return id; }
 
 inline std::map<int, Continent> Map::GetContinents() { return *continents;}
+
+void MapDriver();
+void MapLoaderDriver();

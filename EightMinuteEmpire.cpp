@@ -3,6 +3,8 @@
 #include "Player.h"
 #include "BiddingDriver.h"
 #include "DriverHelper.h"
+#include "Cards.h"
+#include "Map.h"
 
 void UserPlaysDriver();
 
@@ -12,7 +14,7 @@ int main()
 
 	//Game loop
 	while (input != 'q') {
-		std::cout << "Enter one of the following characters:\n"
+		std::cout << "\nEnter one of the following characters:\n"
 			<< "p to play with 2 CPUs\n"
 			<< "1-5 for automatic drivers for respective parts\n"
 			<< "q to quit\n\n";
@@ -23,9 +25,11 @@ int main()
 		{
 			case '1':
 				cout << "Map Driver\n\n";
+				MapDriver();
 				break;
 			case '2':
 				cout << "Map Loader Driver\n\n";
+				MapLoaderDriver();
 				break;
 			case '3':
 				cout << "Player Driver\n\n";
@@ -33,6 +37,7 @@ int main()
 				break;
 			case '4':
 				cout << "Cards deck/hand Driver\n\n";
+				CardsDriver();
 				break;
 			case '5':
 				cout << "Bidding Driver\n\n";

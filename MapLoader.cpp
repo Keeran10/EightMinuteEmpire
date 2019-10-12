@@ -15,6 +15,35 @@ MapLoader::MapLoader(std::string file_path)
 
 MapLoader::~MapLoader()
 {
+	delete map;
+	map = NULL;
+	std::cout << "Deleted map from error file." << std::endl;
+}
+
+void CleanUp(int ERROR_CODE, std::string file_path, std::string line, MapLoader* ml)
+{
+	if (ERROR_CODE == 0)
+		std::cout << "Invalid map: " <<  file_path  << " -- File does not exist." << std::endl;
+	if (ERROR_CODE == 1)
+		std::cout << "Invalid map: " << file_path << " -- Continent id expected, but received " << line << " instead." << std::endl;
+	if (ERROR_CODE == 2)
+		std::cout << "Invalid map: " << file_path << " -- Continent id can't be negative or zero: " << line << std::endl;
+	if (ERROR_CODE == 3)
+		std::cout << "Invalid map: " << file_path << " -- Region id expected, but received " << line << " instead." << std::endl;
+	if (ERROR_CODE == 4)
+		std::cout << "Invalid map: " << file_path << " -- Region id can't be negative or zero: " << line << std::endl;
+	if (ERROR_CODE == 5)
+		std::cout << "Invalid map: " << file_path << " -- Continent " << line << " was not initialized at the top." << std::endl;
+	if (ERROR_CODE == 6)
+		std::cout << "Invalid map: " << file_path << " -- adjacent id expected, but received " << line << " instead." << std::endl;
+	if (ERROR_CODE == 7)
+		std::cout << "Invalid map: " << file_path << " -- cost expected, but received " << line << " instead." << std::endl;
+	if (ERROR_CODE == 8)
+		std::cout << "Invalid map: " << file_path << " -- region " << line << " already exists." << std::endl;
+	if (ERROR_CODE == 9)
+		std::cout << "Invalid map: " << file_path << " -- Unrecognized input: " << line << std::endl;
+
+	delete ml;
 }
 
 void MapLoader::LoadMap(Map* map, std::string file_path)
@@ -24,6 +53,7 @@ void MapLoader::LoadMap(Map* map, std::string file_path)
 	int continent_id = 0;
 	int region_id = 0;
 	int adj_id(0), cost(0);
+	bool success = true;
 	bool parsingRegions = false;
 	bool parsingContinents = false;
 	bool parsingAdjacents = false;
@@ -34,7 +64,7 @@ void MapLoader::LoadMap(Map* map, std::string file_path)
 
 	if (!file.is_open())
 	{
-		std::cout << "Invalid map file format -- File " << file_path << " does not exist." << std::endl;
+		CleanUp(0, file_path, "", this);
 		return;
 	}
 
@@ -46,37 +76,38 @@ void MapLoader::LoadMap(Map* map, std::string file_path)
 			parsingContinents = true;
 			continue;
 		}
-		if (line == "region")
+		else if (line == "region")
 		{
 			parsingRegions = true;
 			continue;
 		}
-		if (line == "done")
+		else if (line == "done")
 		{
 			parsingRegions = false;
 			continue;
 		}
-		if (line == "adjacent")
+		else if (line == "adjacent")
 		{
 			parsingAdjacents = true;
 			continue;
 		}
-		if (line == "c")
+		else if (line == "c")
 		{
 			continentLock = false;
 			continue;
 		}
-		if (line == "r")
+		else if (line == "r")
 		{
 			regionLock = false;
 			continue;
 		}
-		if (line == "end")
+		else if (line == "end")
 		{
+			std::cout << "Valid map: " << file_path << " -- SUCCESS." << std::endl;
 			return;
 		}
 
-		if (parsingContinents)
+		else if (parsingContinents)
 		{
 			try
 			{
@@ -84,7 +115,7 @@ void MapLoader::LoadMap(Map* map, std::string file_path)
 			}
 			catch (...)
 			{
-				std::cout << "Invalid map file format -- Continent id expected, but received " << line << " instead." << std::endl;
+				CleanUp(1, file_path, line, this);
 				return;
 			}
 			if (continent_id > 0)
@@ -95,11 +126,11 @@ void MapLoader::LoadMap(Map* map, std::string file_path)
 			}
 			else
 			{
-				std::cout << "Invalid map file format -- Continent id can't be negative or zero: " << continent_id << std::endl;
+				CleanUp(2, file_path, line, this);
 				return;
 			}
 		}
-		if (parsingRegions)
+		else if (parsingRegions)
 		{
 			try
 			{
@@ -107,49 +138,47 @@ void MapLoader::LoadMap(Map* map, std::string file_path)
 			}
 			catch (...)
 			{
-				std::cout << "Invalid map file format -- Region id expected, but received " << line << " instead." << std::endl;
+				CleanUp(3, file_path, line, this);
 				return;
 			}
 			if (region_id > 0)
 			{
+				if (map->GetRegion(region_id))
+				{
+					CleanUp(8, file_path, line, this);
+					return;
+				}
 				map->GetContinents().at(continent_id).AddRegion(new Region(region_id, continent_id));
-				continue;
 			}
 			else
 			{
 
-				std::cout << "Invalid map file format -- Region id can't be negative or zero: " << region_id << std::endl;
+				CleanUp(4, file_path, line, this);
 				return;
 			}
 		}
-		if (parsingAdjacents)
+		else if (parsingAdjacents)
 		{
 			if (!continentLock)
 			{
 				try
 				{
 					continent_id = std::stoi(line);
-					continentLock = true;
-					continue;
+
 					// Must check for non-existent continents
-					/** 
-					std::map<int, Continent>::iterator itr = map->GetContinents().find(continent_id);
-				
-					if (itr != map->GetContinents().end())
+					for (auto& continent_pair : map->GetContinents()) 
 					{
-						continentLock = true;
-						continue;
+						if(continent_id == continent_pair.second.GetId()) continentLock = true;
 					}
-					else
+					if(!continentLock)
 					{
-						std::cout << "Invalid map file format -- Continent " << continent_id << " was not initialized at the top." << std::endl;
+						CleanUp(5, file_path, line, this);
 						return;
 					}
-					/**/
 				}
 				catch (...)
 				{
-					std::cout << "Invalid map file format -- Continent id expected, but received " << line << " instead." << std::endl;
+					CleanUp(1, file_path, line, this);
 					return;
 				}
 
@@ -164,7 +193,7 @@ void MapLoader::LoadMap(Map* map, std::string file_path)
 				}
 				catch (...)
 				{
-					std::cout << "Invalid map file format -- Region id expected, but received " << line << " instead." << std::endl;
+					CleanUp(3, file_path, line, this);
 					return;
 				}
 			}
@@ -173,9 +202,10 @@ void MapLoader::LoadMap(Map* map, std::string file_path)
 				if (adj_id > 0 && cost > 0)
 				{
 					// must check that bi-directionality is enforced.
-					map->GetContinents().at(continent_id).GetRegions().at(region_id).AddAdjacent(map->GetRegion(adj_id), cost);
+					map->GetContinents().at(continent_id).GetRegions().at(region_id).AddAdjacent(*map->GetRegion(adj_id), cost);
 					adj_id = 0;
 					cost = 0;
+					continue;
 				}
 				if (line == "(")
 				{
@@ -202,7 +232,7 @@ void MapLoader::LoadMap(Map* map, std::string file_path)
 					}
 					catch (...)
 					{
-						std::cout << "Invalid map file format -- id or cost expected, but received " << line << " instead." << std::endl;
+						CleanUp(6, file_path, line, this);
 						return;
 					}	
 				}
@@ -215,11 +245,16 @@ void MapLoader::LoadMap(Map* map, std::string file_path)
 					}
 					catch (...)
 					{
-						std::cout << "Invalid map file format -- id or cost expected, but received " << line << " instead." << std::endl;
+						CleanUp(7, file_path, line, this);
 						return;
 					}
 				}
 			}
+		}
+		else 
+		{
+			CleanUp(9, file_path, line, this);
+			return;
 		}
 	}
 }

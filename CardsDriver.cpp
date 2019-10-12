@@ -1,20 +1,17 @@
-
-
 #include "Cards.h"
-#include "Cards.cpp"
 #include <iostream>
 #include <string>
-using namespace std;
 
+void CardDriver(){
 
-int main(int argc, char *argv[]){
-    cout << "HELLO COMP345 PROJECT PART 1" << endl;
+	Deck* deck = new Deck();
+	deck->PrintDeck();
 
-    Deck myDeck;
-    myDeck.draw();
+    Hand* hand = new Hand(deck);
+	std::cout << "deck size: " << deck->GetDeck()->size() << std::endl;
+	hand->PrintHand();
 
-    Hand h;
-    h.exchange();
-    
-    return 0;
+    hand->Exchange(0, 0, deck);
+	hand->PrintHand();
+	std::cout << "deck size: " << deck->GetDeck()->size() << std::endl;
 }
