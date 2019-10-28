@@ -1,5 +1,7 @@
 #pragma once
 #include "BiddingFacility.h"
+#include "Cards.h"
+#include "Map.h"
 #include <string>
 #include <vector>
 
@@ -11,7 +13,9 @@ class Player {
 	int *coins, *age, *cubes, *discs;
 	string name;
 	vector<string> countries;
-
+	vector<Army*> armies;
+	vector<City*> cities;
+	vector<Card*> cards;
 	public:
 		// Constructors & Destructor
 		Player();
@@ -52,6 +56,16 @@ class Player {
 		}
 		inline BiddingFacility* GetBiddingFacility() { return biddingFacility; }
 
+		// part 4
+		inline vector<Army*> GetArmies() { return armies; }
+		inline void SetArmy(Army* army) { armies.push_back(army); }
+		inline void SetCity(City* city) { cities.push_back(city); }
+		void PlaceNewArmies(Map* map, int region, int num_armies);
+		void MoveArmies(Map* map, int source, int destination, int armies_to_move);
+		void MoveOverLand(Map* map, Region*, Region*);
+		void MoveOverWater(Map* map, Region*, Region*);
+		void BuildCity(Map* map, int region_id);
+		void DestroyArmy(Map* map, int region_id, string enemy);
 		// Functions
 		string PayCoin();
 		string PlaceNewArmies();

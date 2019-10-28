@@ -8,9 +8,9 @@ private:
 	
 public:
 	MapLoader();
-	MapLoader(std::string file_path);
+	MapLoader(string file_path);
 	~MapLoader();
-	void LoadMap(Map* map, std::string file_path);
+	void LoadMap(Map* map, string file_path);
 	Map* GetMap();
 };
 
