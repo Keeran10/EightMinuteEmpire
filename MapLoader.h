@@ -9,9 +9,9 @@ private:
 	
 public:
 	MapLoader();
-	MapLoader(std::string file_path);
+	MapLoader(string file_path);
 	~MapLoader();
-	bool LoadMap(Map* map, std::string file_path);
+	void LoadMap(Map* map, string file_path);
 	inline bool getIsValid() { return isValid; }
 	Map* GetMap();
 };

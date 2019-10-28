@@ -2,6 +2,29 @@
 #include "MapLoader.h"
 #include <iostream>
 
+City::City()
+{
+}
+
+City::City(string color, string owner)
+{
+}
+
+City::~City()
+{
+}
+
+Army::Army()
+{
+}
+
+Army::Army(string color, string owner)
+{
+}
+
+Army::~Army()
+{
+}
 
 // Region member functions 
 Region::Region(){}
@@ -19,6 +42,7 @@ Region::~Region()
 
 void Region::setOwner(std::string* owner) { this->owner = owner; }
 
+// Adds the adjacent region to both concerned regions 
 void Region::AddAdjacent(Region region, int cost)
 {
 	std::pair<Region, int> adjacent;
@@ -37,6 +61,32 @@ void Region::AddAdjacent(Region region, int cost)
 	// from adjacent to calling region for bi-directionality
 	adjacent.first = *this;
 	region.adjacents->push_back(adjacent);
+}
+
+// Checks if two regions are adjacent and returns the cost of travel between them
+int Region::IsAdjacent(Region region)
+{
+	for (auto const& adjacent : *region.adjacents)
+	{
+		if (adjacent.first.GetId() == this->GetId())
+		{
+			return adjacent.second;
+		}
+	}
+	return 0;
+}
+
+// Checks how many armies a specific user has on this region
+int Region::CountArmies(string name)
+{
+	int ctr = 0;
+
+	for (Army* army : *armies)
+	{
+		if (army->GetOwner() == name) ctr++;
+	}
+
+	return ctr;
 }
 
 
