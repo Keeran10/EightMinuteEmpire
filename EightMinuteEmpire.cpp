@@ -65,6 +65,9 @@ int main()
 
 	PlayGame(map, players, deck);
 
+	delete ml, player, deck;
+	players.clear();
+	players.shrink_to_fit();
 	return 0;
 }
 
@@ -200,4 +203,12 @@ void PlayGame(Map* map, vector<Player*> players, Deck* deck) {
 	players.back()->GetBiddingFacility()->SetBid(bid);
 
 	PrintBids(players);
+
+	Player* startingPlayer = GetStartingPlayer(players);
+
+	cout << "Starting player: " << startingPlayer->GetName() << "\n\n";
+
+
+
+	delete boardHand;
 }
