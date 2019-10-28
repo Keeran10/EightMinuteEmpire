@@ -10,7 +10,7 @@ MapLoader::MapLoader() : map(nullptr)
 MapLoader::MapLoader(string file_path)
 {
 	map = new Map();
-	LoadMap(map, file_path);
+	isValid = LoadMap(map, file_path);
 }
 
 MapLoader::~MapLoader()
@@ -65,7 +65,7 @@ void MapLoader::LoadMap(Map* map, string file_path)
 	if (!file.is_open())
 	{
 		CleanUp(0, file_path, "", this);
-		return;
+		return false;
 	}
 
 	while (file >> line)
@@ -116,7 +116,7 @@ void MapLoader::LoadMap(Map* map, string file_path)
 			catch (...)
 			{
 				CleanUp(1, file_path, line, this);
-				return;
+				return false;
 			}
 			if (continent_id > 0)
 			{
@@ -127,7 +127,7 @@ void MapLoader::LoadMap(Map* map, string file_path)
 			else
 			{
 				CleanUp(2, file_path, line, this);
-				return;
+				return false;
 			}
 		}
 		else if (parsingRegions)
@@ -139,14 +139,14 @@ void MapLoader::LoadMap(Map* map, string file_path)
 			catch (...)
 			{
 				CleanUp(3, file_path, line, this);
-				return;
+				return false;
 			}
 			if (region_id > 0)
 			{
 				if (map->GetRegion(region_id))
 				{
 					CleanUp(8, file_path, line, this);
-					return;
+					return false;
 				}
 				map->GetContinents().at(continent_id).AddRegion(new Region(region_id, continent_id));
 			}
@@ -154,7 +154,7 @@ void MapLoader::LoadMap(Map* map, string file_path)
 			{
 
 				CleanUp(4, file_path, line, this);
-				return;
+				return false;
 			}
 		}
 		else if (parsingAdjacents)
@@ -173,13 +173,13 @@ void MapLoader::LoadMap(Map* map, string file_path)
 					if(!continentLock)
 					{
 						CleanUp(5, file_path, line, this);
-						return;
+						return false;
 					}
 				}
 				catch (...)
 				{
 					CleanUp(1, file_path, line, this);
-					return;
+					return false;
 				}
 
 			}
@@ -194,7 +194,7 @@ void MapLoader::LoadMap(Map* map, string file_path)
 				catch (...)
 				{
 					CleanUp(3, file_path, line, this);
-					return;
+					return false;
 				}
 			}
 			else
@@ -233,7 +233,7 @@ void MapLoader::LoadMap(Map* map, string file_path)
 					catch (...)
 					{
 						CleanUp(6, file_path, line, this);
-						return;
+						return false;
 					}	
 				}
 				if (costNext)
@@ -246,7 +246,7 @@ void MapLoader::LoadMap(Map* map, string file_path)
 					catch (...)
 					{
 						CleanUp(7, file_path, line, this);
-						return;
+						return false;
 					}
 				}
 			}
@@ -254,7 +254,7 @@ void MapLoader::LoadMap(Map* map, string file_path)
 		else 
 		{
 			CleanUp(9, file_path, line, this);
-			return;
+			return false;
 		}
 	}
 }
