@@ -3,20 +3,19 @@
 class BiddingFacility {
 
 	// Properties
-	int *bid;
+	private:
+		int bid;
 	public:
 		// Constructors & Destructor
 		BiddingFacility();
 		~BiddingFacility();
 
 		// Getters & Setters
-		inline int GetBid() { return *bid; };
+		inline int GetBid() { return bid; };
 		inline void SetBid(int bid) {
-			delete this->bid;
-			int* a = new int(bid);
-			this->bid = a;
+			this->bid = bid;
 		}
 
 		// Functions
-		void RandomizeBid();
+		void RandomizeBid(int coins);
 };
