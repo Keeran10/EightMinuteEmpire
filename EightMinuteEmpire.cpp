@@ -48,7 +48,7 @@ int main()
 	string name = "";
 	int age = 0;
 
-	std::cout << "\nPlease enter the player name: ";
+	std::cout << "Please enter the player name: ";
 	std::cin >> name;
 	player->SetName(name);
 
@@ -213,7 +213,7 @@ Player* SetupPhase(Map* map, vector<Player*> players, Deck* deck, Hand* boardHan
 
 	int bid;
 	do {
-		std::cout << "Please enter your bid (0-" + std::to_string(players.back()->GetCoins()) + "): ";
+		std::cout << "\nPlease enter your bid (0-" + std::to_string(players.back()->GetCoins()) + "): ";
 		std::cin >> bid;
 	} while (bid < 0 || bid > players.back()->GetCoins());
 	for (int i = 0; i < players.size() - 1; i++) {

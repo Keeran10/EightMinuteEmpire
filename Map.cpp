@@ -34,6 +34,8 @@ Region::Region(int region_id, int continent_id)
 	id = new int(region_id);
 	this->continent_id = new int(continent_id);
 	adjacents = new std::vector<std::pair<Region, int>>();
+	armies = new vector<Army*>();
+	cities = new vector<City*>();
 }
 
 Region::~Region() 
