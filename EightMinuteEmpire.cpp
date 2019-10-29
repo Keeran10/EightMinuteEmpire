@@ -260,7 +260,7 @@ void PlayerTurnPhase(Map* map, Player* startingPlayer, Deck* deck, Hand* boardHa
 
 		startingPlayer->SetCoins(startingPlayer->GetCoins() - card_cost.second);
 
-		cout << startingPlayer->GetName() << ", you have " << startingPlayer->GetCoins() << " coins remaining." << endl;
+		cout << "\n" << startingPlayer->GetName() << ", you have " << startingPlayer->GetCoins() << " coins remaining." << endl;
 
 		Card* card = card_cost.first;
 
@@ -274,7 +274,7 @@ void PlayerTurnPhase(Map* map, Player* startingPlayer, Deck* deck, Hand* boardHa
 		{
 			char take;
 			do {
-				cout << "Would you like to take the above action or ignore it? (y/n): ";
+				cout << "\nWould you like to take the above action or ignore it? (y/n): ";
 				cin >> take;
 
 				if (take == 'n' || take == 'N')

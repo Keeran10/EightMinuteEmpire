@@ -331,7 +331,7 @@ pair<Card*, int> Hand::Exchange(char index, int coins, Deck* deck)
 
 	hand->push_back(deck->draw()); 
 
-	cout << "Bought card: { " << card->GetResource() << " & " << card->GetAction() << " } for " << cost << " cost." << endl;
+	cout << "\nBought card: { " << card->GetResource() << " & " << card->GetAction() << " } for " << cost << " cost." << endl;
 	
 	card_cost.first = card;
 	card_cost.second = cost;
