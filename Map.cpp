@@ -201,6 +201,27 @@ Region* Map::GetRegion(int region_id)
 	return NULL;
 }
 
+void Map::GetPlayerRegions(string name)
+{
+	cout << name << "'s regions: ";
+
+	for (auto cit = continents->begin(); cit != continents->end(); cit++)
+	{
+		Continent continent = cit->second;
+
+		for (std::pair<int, Region> region_pair : continent.GetRegions())
+		{
+			int count = region_pair.second.CountArmies(name);
+			if (count > 0)
+			{
+				cout << region_pair.second.GetId() << " (armies = " << count << "), ";
+			}
+		}
+	}
+
+	cout << endl;
+}
+
 void Map::PrintMap() {
 	
 	if (!this) 

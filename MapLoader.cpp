@@ -17,7 +17,6 @@ MapLoader::~MapLoader()
 {
 	delete map;
 	map = NULL;
-	cout << "Deleted map from error file." << endl;
 }
 
 void CleanUp(int ERROR_CODE, string file_path, string line, MapLoader* ml)
