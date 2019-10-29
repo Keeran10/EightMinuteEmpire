@@ -22,7 +22,7 @@ int main()
 		//cin map by number
 		ml = new MapLoader("game_map.txt");
 		map = ml->GetMap();
-	} while (!(ml->getIsValid()));
+	} while (!ml->getIsValid());
 
 
 	int cpus = 0;
@@ -61,7 +61,7 @@ int main()
 
 	map->PrintMap();
 	PrintPlayers(players);
-	Deck* deck = new Deck();
+	Deck* deck = new Deck(players.size());
 
 	PlayGame(map, players, deck);
 

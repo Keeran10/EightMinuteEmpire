@@ -4,7 +4,7 @@
 
 void CardDriver(){
 
-	Deck* deck = new Deck();
+	Deck* deck = new Deck(5);
 	deck->PrintDeck();
 
     Hand* hand = new Hand(deck);

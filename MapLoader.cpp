@@ -46,7 +46,7 @@ void CleanUp(int ERROR_CODE, string file_path, string line, MapLoader* ml)
 	delete ml;
 }
 
-void MapLoader::LoadMap(Map* map, string file_path)
+bool MapLoader::LoadMap(Map* map, string file_path)
 {
 	ifstream file(file_path);
 	string line;
@@ -104,7 +104,7 @@ void MapLoader::LoadMap(Map* map, string file_path)
 		else if (line == "end")
 		{
 			cout << "Valid map: " << file_path << " -- SUCCESS." << endl;
-			return;
+			return true;
 		}
 
 		else if (parsingContinents)
