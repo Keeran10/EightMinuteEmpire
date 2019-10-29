@@ -41,7 +41,7 @@ void Player::PlaceNewArmies(Map* map, int region_id, int num_armies)
 	cout << "Added " << num_armies << " to region " << region_id << "." << endl;
 }
 
-// Move a player's armies from one region to another. NEED TO BE REFACTORED ! 
+// Move a player's armies from one region to another.
 void Player::MoveArmies(Map* map, int source, int destination, int armies_to_move)
 {
 	Region* src = map->GetRegion(source);
@@ -59,10 +59,24 @@ void Player::MoveArmies(Map* map, int source, int destination, int armies_to_mov
 		return;
 	}
 
-	if (moving_cost == 1)
-		MoveOverLand(map, src, des);
-	else
-		MoveOverWater(map, src, des);
+	int num_armies = src->CountArmies(this->name);
+
+	if (num_armies < armies_to_move) {
+		cout << "Trying to move " << armies_to_move << " armies when only " << num_armies << 
+			" armies are stationed (region " << source << "). Abort..." << endl;
+		return;
+	}
+
+	int ctr = armies_to_move;
+
+	while (ctr != 0)
+	{
+		if (moving_cost == 1)
+			MoveOverLand(map, src, des);
+		else
+			MoveOverWater(map, src, des);
+		ctr--;
+	}
 }
 
 // Move one army at a time for a given source and destination over land
