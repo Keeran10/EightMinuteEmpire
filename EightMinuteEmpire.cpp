@@ -61,7 +61,7 @@ int main()
 
 	map->PrintMap();
 	PrintPlayers(players);
-	Deck* deck = new Deck(5);
+	Deck* deck = new Deck(players.size());
 
 	PlayGame(map, players, deck);
 
