@@ -36,8 +36,8 @@ public:
 class Region 
 {
 private:
-	int* id;
-	int* continent_id;
+	int id;
+	int continent_id;
 	// this might need to be refactored into map<player -> pair<armies, cities>>
 	string* owner;
 	// the int represents the cost of travel (either 1 for land or 3 for water)
@@ -98,12 +98,13 @@ public:
 	void AddRegion(Region* region);
 	void AddContinent(Continent* continent);
 	Region* GetRegion(int region_id);
+	Region* GetRegion2(int region_id);
 	void GetPlayerRegions(string name);
 	void PrintMap();
 };
 
-inline int Region::GetId() const { return *id; }
-inline int Region::GetContinentId() { return *continent_id; }
+inline int Region::GetId() const { return id; }
+inline int Region::GetContinentId() { return continent_id; }
 inline string Region::GetOwner() { return *owner; }
 inline vector<pair<Region, int>> Region::GetAdjacents() { return *adjacents; }
 

@@ -8,9 +8,11 @@ Player::Player() : name("player"), age(new int(0)), coins(new int(10)), cubes(ne
 }
 
 // Constructor for NPCs
-Player::Player(string name, int age) : name(name), age(new int(age)), coins(new int(10)), cubes(new int(14)), discs(new int(3))
+Player::Player(string name, int age, string color) : name(name), age(new int(age)), coins(new int(10)), cubes(new int(14)), discs(new int(3))
 {
+	this->color = color;
 	biddingFacility = new BiddingFacility();
+	armies.push_back(new Army(color, name));
 }
 
 // Default Destructor
@@ -20,15 +22,9 @@ Player::~Player()
 }
 
 // Place new armies on the map. Right now, I'm also adding to player's army vector. Should we limit this to 14?
-void Player::PlaceNewArmies(Map* map, int region_id, int num_armies)
+void Player::PlaceNewArmies(Map* map, Region* region, int num_armies)
 {
-	Region* region = map->GetRegion(region_id);
 	int ctr = num_armies;
-
-	if (!region) {
-		cout << "Non-existing region. Abort..." << endl;
-		return;
-	}
 
 	while (ctr != 0)
 	{
@@ -38,7 +34,7 @@ void Player::PlaceNewArmies(Map* map, int region_id, int num_armies)
 		ctr--;
 	}
 
-	cout << "Added " << num_armies << " to region " << region_id << "." << endl;
+	cout << "Added " << num_armies << " to region " << region->GetId() << "." << endl;
 }
 
 // Move a player's armies from one region to another.
@@ -234,13 +230,4 @@ void Player::PlayerDriverGameLoop()
 	std::cout << player->BuildCity() << "\n";
 	std::cout << player->DestroyArmy() << "\n";
 
-	vector<string> playerCountries0 = player->GetCountriesVector();
-	playerCountries0.push_back("country1");
-	playerCountries0.push_back("country2");
-	playerCountries0.push_back("country3");
-
-	vector<string> playerCountries = player->GetCountriesVector();
-	for (unsigned int i = 0; i < playerCountries.size(); i++) {
-		cout << "Player country " << i << ": " << playerCountries[i] << "\n";
-	}
 }

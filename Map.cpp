@@ -31,8 +31,8 @@ Region::Region(){}
 
 Region::Region(int region_id, int continent_id) 
 {	
-	id = new int(region_id);
-	this->continent_id = new int(continent_id);
+	id = region_id;
+	this->continent_id = continent_id;
 	adjacents = new std::vector<std::pair<Region, int>>();
 	armies = new vector<Army*>();
 	cities = new vector<City*>();
@@ -195,6 +195,23 @@ Region* Map::GetRegion(int region_id)
 		for (std::pair<int, Region> region_pair : continent.GetRegions())
 		{
 			if (region_pair.second.GetId() == region_id) 
+			{
+				return &region_pair.second;
+			}
+		}
+	}
+	return NULL;
+}
+
+Region* Map::GetRegion2(int id)
+{
+	for (auto cit = continents->begin(); cit != continents->end(); cit++)
+	{
+		Continent continent = cit->second;
+
+		for (std::pair<int, Region> region_pair : continent.GetRegions())
+		{
+			if (region_pair.second.GetId() == id)
 			{
 				return &region_pair.second;
 			}

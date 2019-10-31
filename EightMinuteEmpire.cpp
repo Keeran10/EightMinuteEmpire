@@ -10,9 +10,11 @@
 
 void UserPlaysDriver();
 Player* SetupPhase(Map* map, vector<Player*> players, Deck* deck, Hand* boardHand);
-void StartingRegionPhase(Map* map, vector<Player*> players);
+bool StartingRegionPhase(Map* map, vector<Player*> players);
 void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck, Hand* boardHand);
 void PlayGame(Map* map, vector<Player*> players, Deck* deck);
+
+const static int STARTING_REGION = 12;
 
 int main()
 {
@@ -27,6 +29,7 @@ int main()
 		map = ml->GetMap();
 	} while (!ml->getIsValid());
 
+	
 
 	int cpus = 0;
 	do {
@@ -35,18 +38,19 @@ int main()
 	} while (cpus > 4 || cpus < 1);
 
 	vector<Player*> players;
-
+	vector<string> colors = {"yellow", "red", "green", "orange"};
 	std::random_device rd;
 	std::mt19937 mt(rd());
 	std::uniform_real_distribution<double> dist(5.0, 100.0);
 
 	for (int i = 0; i < cpus; i++) {
-		players.push_back(new Player("CPU" + std::to_string(i), (int)dist(mt)));
+		players.push_back(new Player("CPU" + std::to_string(i), (int)dist(mt), colors.at(i)));
 	}
 
 	Player* player = new Player();
 	string name = "";
 	int age = 0;
+	player->SetColor("blue");
 
 	std::cout << "Please enter the player name: ";
 	std::cin >> name;
@@ -125,8 +129,8 @@ void A1Drivers() {
 void UserPlaysDriver() {
 
 	// Create players
-	Player* cpu1 = new Player("CPU1", 15);
-	Player* cpu2 = new Player("CPU2", 20);
+	Player* cpu1 = new Player("CPU1", 15, "violet");
+	Player* cpu2 = new Player("CPU2", 20, "purple");
 	Player* player = new Player();
 	string name;
 	int age, bid;
@@ -195,9 +199,10 @@ void PlayGame(Map* map, vector<Player*> players, Deck* deck) {
 		return;
 	}
 
-	StartingRegionPhase(map, players);
+	bool valid_region = StartingRegionPhase(map, players);
 
-	PlayerTurnPhase(map, players, player_position, deck, boardHand);
+	if(valid_region)
+		PlayerTurnPhase(map, players, player_position, deck, boardHand);
 
 	delete boardHand;
 }
@@ -246,9 +251,22 @@ Player* SetupPhase(Map* map, vector<Player*> players, Deck* deck, Hand* boardHan
 	return startingPlayer;
 }
 
-void StartingRegionPhase(Map* map, vector<Player*> players)
+bool StartingRegionPhase(Map* map, vector<Player*> players)
 {
+	Region* region = map->GetRegion(STARTING_REGION);
+	Player* player;
 
+	if (region == nullptr)
+	{
+		cout << "Starting region " << STARTING_REGION << " does not exist." << endl;
+		return false;
+	}
+	for (int i = 0; i < players.size(); i++)
+	{
+		player = players.at(i);
+		player->PlaceNewArmies(map, region, 3);
+	}
+	return true;
 }
 
 void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck, Hand* boardHand)
@@ -305,7 +323,7 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 						int destination = -1;
 						int armies_to_move = -1;
 
-						map->GetPlayerRegions(startingPlayer->GetName()); // bug
+						map->GetPlayerRegions(startingPlayer->GetName()); 
 
 						do
 						{
