@@ -33,6 +33,8 @@ Player* BiddingDriver::CalculateWinner(vector<Player*> players)
 			}
 		}
 	}
+	winningPlayer->SetCoins(winningPlayer->GetCoins() - winningPlayer->GetBiddingFacility()->GetBid());
+	cout << winningPlayer->GetName() << " has payed " << winningPlayer->GetBiddingFacility()->GetBid() << " to become the starting player." << endl;
 	return winningPlayer;
 }
 

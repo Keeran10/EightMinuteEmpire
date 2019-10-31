@@ -9,6 +9,9 @@
 #include <random>
 
 void UserPlaysDriver();
+Player* SetupPhase(Map* map, vector<Player*> players, Deck* deck, Hand* boardHand);
+void StartingRegionPhase(Map* map, vector<Player*> players);
+void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck, Hand* boardHand);
 void PlayGame(Map* map, vector<Player*> players, Deck* deck);
 
 int main()
@@ -27,7 +30,7 @@ int main()
 
 	int cpus = 0;
 	do {
-		std::cout << "\nPlease enter how many CPUs you would like to play with (1-4)\n";
+		std::cout << "\nPlease enter how many CPUs you would like to play with (1-4): ";
 		std::cin >> cpus;
 	} while (cpus > 4 || cpus < 1);
 
@@ -45,22 +48,26 @@ int main()
 	string name = "";
 	int age = 0;
 
-	std::cout << "\nPlease enter the player name\n";
+	std::cout << "Please enter the player name: ";
 	std::cin >> name;
 	player->SetName(name);
 
 	do {
-		std::cout << "Please enter the player age (5-100)\n";
+		std::cout << "Please enter the player age (5-100): ";
 		std::cin >> age;
 	} while (age > 100 || age < 5);
 	player->SetAge(age);
 
 	players.push_back(player);
 
-	std::cout << "\nHere is the map and the players you will be playing with\n\n";
+	std::cout << "Here is the map and the players you will be playing with\n\n";
 
 	map->PrintMap();
+	cout << "\n-----------------------------------------" << endl;
+	cout << "*PLAYERS*" << endl;
+	cout << "-----------------------------------------" << endl;
 	PrintPlayers(players);
+
 	Deck* deck = new Deck(players.size());
 
 	PlayGame(map, players, deck);
@@ -167,25 +174,51 @@ void UserPlaysDriver() {
 	players.shrink_to_fit();
 }
 
+// MAIN GAME LOOP
 void PlayGame(Map* map, vector<Player*> players, Deck* deck) {
-	Hand* boardHand = new Hand(deck);
-	cout << "Here is the current board Hand/n";
-	boardHand->PrintHand();
 
+	Hand* boardHand = new Hand(deck);
+
+	Player* startingPlayer = SetupPhase(map, players, deck, boardHand);
+
+	int player_position = -1;
+
+	for (int i = 0; i < players.size(); i++)
+	{
+		if (startingPlayer == players.at(i))
+			player_position = i;
+	}
+
+	if (player_position < 0)
+	{
+		cout << "Starting player not found. Abort..." << endl;
+		return;
+	}
+
+	StartingRegionPhase(map, players);
+
+	PlayerTurnPhase(map, players, player_position, deck, boardHand);
+
+	delete boardHand;
+}
+
+Player* SetupPhase(Map* map, vector<Player*> players, Deck* deck, Hand* boardHand)
+{
 	int coins = 0;
+
 	switch (players.size()) {
-		case 2:
-			coins = 14;
-			break;
-		case 3:
-			coins = 11;
-			break;
-		case 4:
-			coins = 9;
-			break;
-		case 5:
-			coins = 8;
-			break;
+	case 2:
+		coins = 14;
+		break;
+	case 3:
+		coins = 11;
+		break;
+	case 4:
+		coins = 9;
+		break;
+	case 5:
+		coins = 8;
+		break;
 	}
 
 	for (int i = 0; i < players.size(); i++) {
@@ -194,7 +227,7 @@ void PlayGame(Map* map, vector<Player*> players, Deck* deck) {
 
 	int bid;
 	do {
-		std::cout << "Please enter your bid (0-" + std::to_string(players.back()->GetCoins()) + ")";
+		std::cout << "\nPlease enter your bid (0-" + std::to_string(players.back()->GetCoins()) + "): ";
 		std::cin >> bid;
 	} while (bid < 0 || bid > players.back()->GetCoins());
 	for (int i = 0; i < players.size() - 1; i++) {
@@ -208,7 +241,131 @@ void PlayGame(Map* map, vector<Player*> players, Deck* deck) {
 
 	cout << "Starting player: " << startingPlayer->GetName() << "\n\n";
 
+	cout << "\nGame has begun. Please enter q (for quit) in any input prompts to exit the game." << endl;
 
+	return startingPlayer;
+}
 
-	delete boardHand;
+void StartingRegionPhase(Map* map, vector<Player*> players)
+{
+
+}
+
+void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck, Hand* boardHand)
+{
+	char input = 'a';
+	
+	do
+	{
+		Player* startingPlayer = players.at(position);
+		cout << "\nHere are the cards from the board.\n";
+
+		boardHand->PrintHand();
+
+		cout << startingPlayer->GetName() << " select a card from the board from positions 1 to 6: ";
+
+		cin >> input;
+
+		pair<Card*, int> card_cost = boardHand->Exchange(input, startingPlayer->GetCoins(), deck);
+
+		if (card_cost.second == -1) {
+			continue;
+		}
+
+		startingPlayer->SetCoins(startingPlayer->GetCoins() - card_cost.second);
+
+		cout << "\n" << startingPlayer->GetName() << ", you have " << startingPlayer->GetCoins() << " coins remaining." << endl;
+
+		Card* card = card_cost.first;
+
+		startingPlayer->SetCards(card);
+
+		pair<string, int> readCard = card->ReadCardAction();
+
+		string action = readCard.first;
+
+		if (action == "move_by_sea" || action == "move_by_land")
+		{
+			char take;
+			do {
+				cout << "\nWould you like to take the above action or ignore it? (y/n): ";
+				cin >> take;
+
+				if (take == 'n' || take == 'N')
+				{
+					break; // ignore action
+				}
+				else if (take == 'y' || take == 'Y')
+				{
+					int move_count = readCard.second;
+
+					while (move_count > 0 || take == 'n' || take == 'N')
+					{
+						int source = -1;
+						int destination = -1;
+						int armies_to_move = -1;
+
+						map->GetPlayerRegions(startingPlayer->GetName()); // bug
+
+						do
+						{
+							cout << "Move armies from region: ";
+							cin >> source;
+						} while (source <= 0);
+						do
+						{
+							cout << "\nto region: ";
+							cin >> destination;
+						} while (destination <= 0);
+						do
+						{
+							cout << "Number of armies to move? Out of a possible " << move_count << ": ";
+							cin >> armies_to_move;
+						} while (armies_to_move <= 0 || armies_to_move > move_count);
+
+						move_count = -armies_to_move;
+
+						startingPlayer->MoveArmies(map, source, destination, armies_to_move);
+
+						cout << "Move more armies or yield your turn? (y/n): ";
+						cin >> take;
+					}
+				}
+			} while (take == 'y' || take == 'n');
+		}
+		else if (action == "add")
+		{
+
+		}
+		else if (action == "destroy")
+		{
+
+		}
+		else if (action == "build")
+		{
+
+		}
+		else if (action == "move_or_add")
+		{
+
+		}
+		else if (action == "build_or_destroy")
+		{
+
+		}
+		else if (action == "add_and_destroy")
+		{
+
+		}
+		else if (action == "default")
+		{
+			cout << "Something went wrong. Abort..." << endl;
+		}
+
+		if (position == players.size() - 1)
+			position = 0;
+		else
+			position++;
+
+	} while (input != 'q');
 }

@@ -57,6 +57,8 @@ class Player {
 		inline BiddingFacility* GetBiddingFacility() { return biddingFacility; }
 
 		// part 4
+		inline void SetCards(Card* card) { cards.push_back(card); }
+		inline vector<Card*> GetCards() { return cards; }
 		inline vector<Army*> GetArmies() { return armies; }
 		inline void SetArmy(Army* army) { armies.push_back(army); }
 		inline void SetCity(City* city) { cities.push_back(city); }

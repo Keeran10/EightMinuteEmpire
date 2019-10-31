@@ -98,6 +98,7 @@ public:
 	void AddRegion(Region* region);
 	void AddContinent(Continent* continent);
 	Region* GetRegion(int region_id);
+	void GetPlayerRegions(string name);
 	void PrintMap();
 };
 
