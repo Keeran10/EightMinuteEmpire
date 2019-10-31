@@ -11,7 +11,7 @@
 void UserPlaysDriver();
 Player* SetupPhase(Map* map, vector<Player*> players, Deck* deck, Hand* boardHand);
 void StartingRegionPhase(Map* map, vector<Player*> players);
-void PlayerTurnPhase(Map* map, Player* startingPlayer, Deck* deck, Hand* boardHand);
+void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck, Hand* boardHand);
 void PlayGame(Map* map, vector<Player*> players, Deck* deck);
 
 int main()
@@ -176,14 +176,28 @@ void UserPlaysDriver() {
 
 // MAIN GAME LOOP
 void PlayGame(Map* map, vector<Player*> players, Deck* deck) {
-	
+
 	Hand* boardHand = new Hand(deck);
-	
+
 	Player* startingPlayer = SetupPhase(map, players, deck, boardHand);
-	
+
+	int player_position = -1;
+
+	for (int i = 0; i < players.size(); i++)
+	{
+		if (startingPlayer == players.at(i))
+			player_position = i;
+	}
+
+	if (player_position < 0)
+	{
+		cout << "Starting player not found. Abort..." << endl;
+		return;
+	}
+
 	StartingRegionPhase(map, players);
 
-	PlayerTurnPhase(map, startingPlayer, deck, boardHand);
+	PlayerTurnPhase(map, players, player_position, deck, boardHand);
 
 	delete boardHand;
 }
@@ -237,11 +251,13 @@ void StartingRegionPhase(Map* map, vector<Player*> players)
 
 }
 
-void PlayerTurnPhase(Map* map, Player* startingPlayer, Deck* deck, Hand* boardHand)
+void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck, Hand* boardHand)
 {
 	char input = 'a';
+	
 	do
 	{
+		Player* startingPlayer = players.at(position);
 		cout << "\nHere are the cards from the board.\n";
 
 		boardHand->PrintHand();
@@ -253,8 +269,6 @@ void PlayerTurnPhase(Map* map, Player* startingPlayer, Deck* deck, Hand* boardHa
 		pair<Card*, int> card_cost = boardHand->Exchange(input, startingPlayer->GetCoins(), deck);
 
 		if (card_cost.second == -1) {
-			cout << "\n" << startingPlayer->GetName() << " select a card from the board from positions 1 to 6: ";
-			cin >> input;
 			continue;
 		}
 
@@ -347,6 +361,11 @@ void PlayerTurnPhase(Map* map, Player* startingPlayer, Deck* deck, Hand* boardHa
 		{
 			cout << "Something went wrong. Abort..." << endl;
 		}
+
+		if (position == players.size() - 1)
+			position = 0;
+		else
+			position++;
 
 	} while (input != 'q');
 }
