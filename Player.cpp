@@ -35,7 +35,7 @@ void Player::PlaceNewArmies(Map* map, Region* region, int num_armies)
 		ctr--;
 	}
 
-	cout << "\n" << this->GetName() << " added " << num_armies << " armies to region " << region->GetId() << "." << endl;
+	cout << "\n" << this->GetName() << " added " << num_armies << " armies to region " << region->GetId() << ".";
 }
 
 // Move a player's armies from one region to another.

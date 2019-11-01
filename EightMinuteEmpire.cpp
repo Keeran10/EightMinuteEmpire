@@ -261,6 +261,11 @@ bool StartingRegionPhase(Map* map, vector<Player*> players)
 		cout << "Starting region " << STARTING_REGION << " does not exist." << endl;
 		return false;
 	}
+
+	cout << "\n-----------------------------------------" << endl;
+	cout << "*STARTING REGION " << STARTING_REGION << "*"<< endl;
+	cout << "-----------------------------------------" << endl;
+
 	for (int i = 0; i < players.size(); i++)
 	{
 		player = players.at(i);
@@ -276,7 +281,7 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 	do
 	{
 		Player* startingPlayer = players.at(position);
-		cout << "\nHere are the cards from the board.\n";
+		cout << "Here are the cards from the board.\n";
 
 		boardHand->PrintHand();
 
