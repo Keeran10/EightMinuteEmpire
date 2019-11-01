@@ -147,7 +147,7 @@ pair<string, int> Card::ReadCardAction()
 {
 	pair<string, int> read = { "default", 0 };
 
-	if (this->AND) return this->ReadCardActionOR();
+	if (this->AND) return this->ReadCardActionAND();
 	if (this->OR) return this->ReadCardActionOR();
 	
 	// move over water

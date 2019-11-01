@@ -280,7 +280,8 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 	
 	do
 	{
-		bool and_or = false;
+		bool or_invoked = false;
+		bool and_invoked = false;
 
 		Player* startingPlayer = players.at(position);
 
@@ -331,7 +332,7 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 					cin >> decision;
 				} while (decision != "move" && decision != "add");
 				
-				and_or = true;
+				or_invoked = true;
 				
 				if (decision == "move")
 				{
@@ -350,6 +351,7 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 
 			} while (take == 'y' || take == 'n');
 		}
+
 		if (action == "build_or_destroy")
 		{
 			do {
@@ -369,7 +371,7 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 					cin >> decision;
 				} while (decision != "build" && decision != "destroy");
 
-				and_or = true;
+				or_invoked = true;
 
 				if (decision == "destroy")
 				{
@@ -386,16 +388,25 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 
 			} while (take == 'y' || take == 'n');
 		}
+
 		if (action == "add_and_destroy")
 		{
+			cout << "\nWould you like to take the above action or ignore it? (y/n): ";
+			cin >> take;
 
+			if (take == 'n' || take == 'N')
+			{
+				break; // ignore action
+			}
+			else
+				and_invoked = true;
 		}
 
 		if (action == "move_by_sea" || action == "move_by_land")
 		{
 
 			do {
-				if (!and_or) {
+				if (!or_invoked) {
 					cout << "\nWould you like to take the above action or ignore it? (y/n): ";
 					cin >> take;
 
@@ -446,16 +457,27 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 				
 			} while (take == 'y' || take == 'n');
 		}
-		else if (action == "add")
+
+		if (action == "add" || and_invoked)
 		{
 			do {
-				if (!and_or) {
+				if (!or_invoked && !and_invoked) {
 					cout << "\nWould you like to take the above action or ignore it? (y/n): ";
 					cin >> take;
 
 					if (take == 'n' || take == 'N')
 					{
 						break; // ignore action
+					}
+				}
+				if (and_invoked) {
+					cout << "\nWould you like to add armies to a region? (y/n): ";
+					cin >> take;
+
+					if (take == 'n' || take == 'N')
+					{
+						action = "destroy";
+						break;
 					}
 				}
 
@@ -492,10 +514,11 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 				break;
 			} while (take == 'y' || take == 'n');
 		}
-		else if (action == "destroy")
+
+		if (action == "destroy")
 		{
 			do {
-				if (!and_or) {
+				if (!or_invoked && !and_invoked) {
 					cout << "\nWould you like to take the above action or ignore it? (y/n): ";
 					cin >> take;
 
@@ -504,8 +527,20 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 						break; // ignore action
 					}
 				}
+				if (and_invoked) {
+					cout << "\nWould you like to destroy an army on your region? (y/n): ";
+					cin >> take;
+
+					if (take == 'n' || take == 'N')
+					{
+						break;
+					}
+				}
 
 				int destroy_army = readCard.second;
+
+				if (and_invoked)
+					destroy_army = 1;
 
 				while (destroy_army > 0 && take != 'n')
 				{
@@ -539,10 +574,10 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 				break;
 			} while (take == 'y' || take == 'n');
 		}
-		else if (action == "build")
+		if (action == "build")
 		{
 			do {
-				if (!and_or) {
+				if (!or_invoked) {
 					cout << "\nWould you like to take the above action or ignore it? (y/n): ";
 					cin >> take;
 
@@ -580,7 +615,8 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 				break;
 			} while (take == 'y' || take == 'n');
 		}
-		else
+		
+		if(action == "default")
 		{
 			cout << "Something went wrong. Abort..." << endl;
 		}
