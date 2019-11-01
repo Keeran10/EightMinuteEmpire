@@ -341,9 +341,11 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 							cin >> armies_to_move;
 						} while (armies_to_move <= 0 || armies_to_move > move_count);
 
-						move_count -= armies_to_move;
+						int success = startingPlayer->MoveArmies(map, source, destination, armies_to_move);
 
-						startingPlayer->MoveArmies(map, source, destination, armies_to_move);
+						move_count = move_count - success;
+
+						if (move_count == 0) break;
 
 						cout << "Move more armies or yield your turn? (y/n): ";
 						cin >> take;
