@@ -306,7 +306,6 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 
 		string action = readCard.first;
 
-		// FIX THAT STUPID SEA BUG FROM 10 -> 3
 		if (action == "move_by_sea" || action == "move_by_land")
 		{
 			char take;
@@ -339,16 +338,16 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 						do
 						{
 							map->GetRegion(source)->PrintAdjacents();
-							cout << "\nto region: ";
+							cout << "\n\nto region: ";
 							cin >> destination;
 						} while (destination <= 0);
 						do
 						{
-							cout << "Number of armies to move? Out of a possible " << move_count << ": ";
+							cout << "\nNumber of armies to move? Out of a possible " << move_count << ": ";
 							cin >> armies_to_move;
 						} while (armies_to_move <= 0 || armies_to_move > move_count);
 
-						int success = startingPlayer->MoveArmies(map, source, destination, armies_to_move);
+						int success = startingPlayer->MoveArmies(map, source, destination, armies_to_move, action);
 
 						move_count = move_count - success;
 

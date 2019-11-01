@@ -39,7 +39,7 @@ void Player::PlaceNewArmies(Map* map, Region* region, int num_armies)
 }
 
 // Move a player's armies from one region to another.
-int Player::MoveArmies(Map* map, int source, int destination, int armies_to_move)
+int Player::MoveArmies(Map* map, int source, int destination, int armies_to_move, string action)
 {
 	Region* src = map->GetRegion(source);
 	Region* des = map->GetRegion(destination);
@@ -68,10 +68,15 @@ int Player::MoveArmies(Map* map, int source, int destination, int armies_to_move
 
 	while (ctr != 0)
 	{
-		if (moving_cost == 1)
+		if (moving_cost == 1 && action == "move_by_land")
 			MoveOverLand(map, src, des);
-		else
+
+		else if (moving_cost == 3 && action == "move_by_sea")
 			MoveOverWater(map, src, des);
+
+		else
+			cout << "\nTried to move on land by ship or on sea without a ship. Abort...\n" << endl;
+
 		ctr--;
 	}
 

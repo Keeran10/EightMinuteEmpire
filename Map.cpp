@@ -93,7 +93,7 @@ int Region::CountArmies(string name)
 
 void Region::PrintAdjacents()
 {
-	cout << "adjacents to region " << this->GetId() << ": ";
+	cout << "\nadjacents to region " << this->GetId() << ": ";
 	for (auto const& adjacent : *adjacents)
 	{
 		if(adjacent.second == 1)
@@ -216,7 +216,7 @@ Region* Map::GetRegion(int region_id)
 
 void Map::PrintPlayerRegions(string name)
 {
-	cout << name << "'s regions: ";
+	cout << "\n" << name << "'s regions: ";
 
 	for (auto cit = continents->begin(); cit != continents->end(); cit++)
 	{
