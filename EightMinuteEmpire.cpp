@@ -323,7 +323,7 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 						int destination = -1;
 						int armies_to_move = -1;
 
-						map->GetPlayerRegions(startingPlayer->GetName()); 
+						map->PrintPlayerRegions(startingPlayer->GetName()); 
 
 						do
 						{
@@ -332,6 +332,7 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 						} while (source <= 0);
 						do
 						{
+							map->GetRegion(source)->PrintAdjacents();
 							cout << "\nto region: ";
 							cin >> destination;
 						} while (destination <= 0);

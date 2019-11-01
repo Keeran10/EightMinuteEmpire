@@ -91,6 +91,14 @@ int Region::CountArmies(string name)
 	return ctr;
 }
 
+void Region::PrintAdjacents()
+{
+	cout << "adjacents to region " << this->GetId() << ": ";
+	for (auto const& adjacent : *adjacents)
+	{
+		std::cout << " region " << adjacent.first.GetId() << ", ";
+	}
+}
 
 // Continent member functions
 Continent::Continent(){}
@@ -203,7 +211,7 @@ Region* Map::GetRegion(int region_id)
 	return NULL;
 }
 
-void Map::GetPlayerRegions(string name)
+void Map::PrintPlayerRegions(string name)
 {
 	cout << name << "'s regions: ";
 

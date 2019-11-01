@@ -58,6 +58,7 @@ public:
 	int GetContinentId();
 	vector<vertex> GetAdjacents();
 	void AddAdjacent(Region region, int cost);
+	void PrintAdjacents();
 
 	// part 4
 	int IsAdjacent(Region region);
@@ -98,8 +99,7 @@ public:
 	void AddRegion(Region* region);
 	void AddContinent(Continent* continent);
 	Region* GetRegion(int region_id);
-	Region* GetRegion2(int region_id);
-	void GetPlayerRegions(string name);
+	void PrintPlayerRegions(string name);
 	void PrintMap();
 };
 
