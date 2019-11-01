@@ -20,6 +20,7 @@ class Player {
 		// Constructors & Destructor
 		Player();
 		~Player();
+		int AddArmies(Map* map, Region* region, int num_armies);
 		Player(string name, int age, string color);
 
 		// Getters & Setters
@@ -61,7 +62,7 @@ class Player {
 		int MoveArmies(Map* map, int source, int destination, int armies_to_move, string action);
 		void MoveOverLand(Map* map, Region*, Region*);
 		void MoveOverWater(Map* map, Region*, Region*);
-		void BuildCity(Map* map, int region_id);
+		int BuildCity(Map* map, int region_id);
 		void DestroyArmy(Map* map, int region_id, string enemy);
 		inline string GetColor() { return color; }
 		inline void SetColor(string color) { this->color = color; }

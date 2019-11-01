@@ -58,6 +58,7 @@ public:
 	int GetContinentId();
 	vector<vertex> GetAdjacents();
 	void AddAdjacent(Region region, int cost);
+	int CountCities(string name);
 	void PrintAdjacents();
 
 	// part 4

@@ -6,7 +6,25 @@ Player::Player() : name("player"), age(new int(0)), coins(new int(10)), cubes(ne
 {
 	this->color = "blue";
 	biddingFacility = new BiddingFacility();
+
 	armies.push_back(new Army(color, name));
+	armies.push_back(new Army(color, name));
+	armies.push_back(new Army(color, name));
+	armies.push_back(new Army(color, name));
+	armies.push_back(new Army(color, name));
+	armies.push_back(new Army(color, name));
+	armies.push_back(new Army(color, name));
+	armies.push_back(new Army(color, name));
+	armies.push_back(new Army(color, name));
+	armies.push_back(new Army(color, name));
+	armies.push_back(new Army(color, name));
+	armies.push_back(new Army(color, name));
+	armies.push_back(new Army(color, name));
+	armies.push_back(new Army(color, name));
+
+	cities.push_back(new City(color, name));
+	cities.push_back(new City(color, name));
+	cities.push_back(new City(color, name));
 }
 
 // Constructor for NPCs
@@ -14,7 +32,25 @@ Player::Player(string name, int age, string color) : name(name), age(new int(age
 {
 	this->color = color;
 	biddingFacility = new BiddingFacility();
+
 	armies.push_back(new Army(color, name));
+	armies.push_back(new Army(color, name));
+	armies.push_back(new Army(color, name));
+	armies.push_back(new Army(color, name));
+	armies.push_back(new Army(color, name));
+	armies.push_back(new Army(color, name));
+	armies.push_back(new Army(color, name));
+	armies.push_back(new Army(color, name));
+	armies.push_back(new Army(color, name));
+	armies.push_back(new Army(color, name));
+	armies.push_back(new Army(color, name));
+	armies.push_back(new Army(color, name));
+	armies.push_back(new Army(color, name));
+	armies.push_back(new Army(color, name));
+
+	cities.push_back(new City(color, name));
+	cities.push_back(new City(color, name));
+	cities.push_back(new City(color, name));
 }
 
 // Default Destructor
@@ -23,7 +59,22 @@ Player::~Player()
 	delete age, coins, cubes, discs, biddingFacility;
 }
 
-// Place new armies on the map. Right now, I'm also adding to player's army vector. Should we limit this to 14?
+// verify that a city exists on region before adding armies through PlaceNewArmies()
+int Player::AddArmies(Map* map, Region* region, int num_armies)
+{
+	int count_cities = region->CountCities(this->name);
+
+	if (count_cities > 0)
+	{
+		this->PlaceNewArmies(map, region, num_armies);
+		return num_armies;
+	}
+
+	cout << this->name << ", you do not have any cities in region " << region->GetId() << ". Armies can only be added on regions with your cities." << endl;
+	return 0;
+}
+
+// Place new armies on the map. Right now, I'm also adding to player's army vector. 
 void Player::PlaceNewArmies(Map* map, Region* region, int num_armies)
 {
 	int ctr = num_armies;
@@ -75,7 +126,7 @@ int Player::MoveArmies(Map* map, int source, int destination, int armies_to_move
 			MoveOverWater(map, src, des);
 
 		else
-			cout << "\nTried to move on land by ship or on sea without a ship. Abort...\n" << endl;
+			cout << "\nTried to move on land by ship or on sea without a ship. Abort..." << endl;
 
 		ctr--;
 	}
@@ -118,14 +169,14 @@ void Player::MoveOverWater(Map* map, Region* src, Region* des)
 }
 
 // Build a city on region with existing personal army. Building a city will remove one from your city vector
-void Player::BuildCity(Map* map, int region_id)
+int Player::BuildCity(Map* map, int region_id)
 {
 	Region* region = map->GetRegion(region_id);
 
 	if (!region)
 	{
 		cout << "region does not exist. Abort..." << endl;
-		return;
+		return 0;
 	}
 
 	vector<Army*> armies = *region->GetArmies();
@@ -135,8 +186,7 @@ void Player::BuildCity(Map* map, int region_id)
 	for (int i = 0; i < armies.size(); i++)
 	{
 		if (armies[i]->GetOwner() == this->name) {
-			region->SetCity(this->cities.at(0));
-			this->cities.pop_back();
+			region->SetCity(new City(this->color, this->name));
 			isBuilt = true;
 			break;
 		}
@@ -145,9 +195,10 @@ void Player::BuildCity(Map* map, int region_id)
 	if (!isBuilt)
 	{
 		cout << "You don't have an army on region " << region_id << " to build a city. Abort..." << endl;
-		return;
+		return 0;
 	}
 	cout << "Successfully built a city on region " << region_id << endl;
+	return 1;
 }
 
 // destroys one army on a space the player occupies

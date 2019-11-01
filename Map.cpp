@@ -91,6 +91,19 @@ int Region::CountArmies(string name)
 	return ctr;
 }
 
+// Checks how many cities a specific user has on this region
+int Region::CountCities(string name)
+{
+	int ctr = 0;
+
+	for (City* city : *cities)
+	{
+		if (city->GetOwner() == name) ctr++;
+	}
+
+	return ctr;
+}
+
 void Region::PrintAdjacents()
 {
 	cout << "\nadjacents to region " << this->GetId() << ": ";
@@ -224,11 +237,20 @@ void Map::PrintPlayerRegions(string name)
 
 		for (std::pair<int, Region*> region_pair : continent.GetRegions())
 		{
-			int count = region_pair.second->CountArmies(name);
+			int count_armies = region_pair.second->CountArmies(name);
+			int count_cities = region_pair.second->CountCities(name);
 
-			if (count > 0)
+			if (count_armies > 0 && count_cities > 0)
 			{
-				cout << region_pair.second->GetId() << " (armies = " << count << "), ";
+				cout << region_pair.second->GetId() << " (" << count_armies << " armies, " << count_cities << " cities), ";
+			}
+			else if (count_armies > 0)
+			{
+				cout << region_pair.second->GetId() << " (" << count_armies << " armies), ";
+			}
+			else if (count_cities > 0)
+			{
+				cout << region_pair.second->GetId() << " (" << count_cities << " cities), ";
 			}
 		}
 	}

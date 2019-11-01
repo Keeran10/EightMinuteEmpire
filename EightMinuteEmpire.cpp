@@ -305,10 +305,12 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 		pair<string, int> readCard = card->ReadCardAction();
 
 		string action = readCard.first;
-
+		
+		char take{};
+		
 		if (action == "move_by_sea" || action == "move_by_land")
 		{
-			char take;
+			
 			do {
 				cout << "\nWould you like to take the above action or ignore it? (y/n): ";
 				cin >> take;
@@ -362,7 +364,47 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 		}
 		else if (action == "add")
 		{
+			do {
+				cout << "\nWould you like to take the above action or ignore it? (y/n): ";
+				cin >> take;
 
+				if (take == 'n' || take == 'N')
+				{
+					break; // ignore action
+				}
+
+				int add_count = readCard.second;
+
+				while (add_count > 0 && take != 'n')
+				{
+					int source = -1;
+					int armies_to_add = -1;
+
+					for (Player* player : players)
+						map->PrintPlayerRegions(player->GetName());
+
+					do
+					{
+						cout << "\nChoose a region with at least 1 city to add armies: ";
+						cin >> source;
+					} while (source <= 0);
+					do
+					{
+						cout << "\nNumber of armies to add? Out of a possible " << add_count << ": ";
+						cin >> armies_to_add;
+					} while (armies_to_add <= 0 || armies_to_add > add_count);
+
+					int success = startingPlayer->AddArmies(map, map->GetRegion(source), armies_to_add);
+
+					add_count = add_count - success;
+
+					if (add_count == 0) break;
+
+					cout << "Add more armies or yield your turn? (y/n): ";
+					cin >> take;
+				}
+				break;
+			} while (take == 'y' || take == 'n');
 		}
 		else if (action == "destroy")
 		{
@@ -370,7 +412,43 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 		}
 		else if (action == "build")
 		{
+			do {
+				cout << "\nWould you like to take the above action or ignore it? (y/n): ";
+				cin >> take;
 
+				if (take == 'n' || take == 'N')
+				{
+					break; // ignore action
+				}
+
+				int build_city = readCard.second;
+
+				while (build_city > 0 && take != 'n')
+				{
+					int source = -1;
+					int cities_to = -1;
+
+					for (Player* player : players)
+						map->PrintPlayerRegions(player->GetName());
+
+					do
+					{
+						cout << "\nChoose one of your regions to build a city: ";
+						cin >> source;
+					} while (source <= 0);
+
+
+					int success = startingPlayer->BuildCity(map, source);
+
+					build_city = build_city - success;
+
+					if (build_city == 0) break;
+
+					cout << "Build a city or yield your turn? (y/n): ";
+					cin >> take;
+				}
+				break;
+			} while (take == 'y' || take == 'n');
 		}
 		else if (action == "move_or_add")
 		{
