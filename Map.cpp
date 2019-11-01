@@ -96,7 +96,10 @@ void Region::PrintAdjacents()
 	cout << "adjacents to region " << this->GetId() << ": ";
 	for (auto const& adjacent : *adjacents)
 	{
-		std::cout << " region " << adjacent.first.GetId() << ", ";
+		if(adjacent.second == 1)
+			std::cout << " region " << adjacent.first.GetId() << " by land, " ;
+		else
+			std::cout << " region " << adjacent.first.GetId() << " by ship, ";
 	}
 }
 
