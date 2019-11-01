@@ -74,7 +74,7 @@ class Continent
 {
 private:
 	int* id;
-	map<int, Region>* regions;
+	map<int, Region*>* regions;
 	
 public:
 	string s;
@@ -84,7 +84,7 @@ public:
 	int GetId();
 	int* GetCId();
 	void AddRegion(Region* region);
-	map<int, Region> GetRegions();
+	map<int, Region*> GetRegions();
 };
 
 class Map
@@ -108,7 +108,7 @@ inline int Region::GetContinentId() { return continent_id; }
 inline string Region::GetOwner() { return *owner; }
 inline vector<pair<Region, int>> Region::GetAdjacents() { return *adjacents; }
 
-inline map<int, Region> Continent::GetRegions(){ return *regions; }
+inline map<int, Region*> Continent::GetRegions(){ return *regions; }
 inline int Continent::GetId() { return *id; }
 inline int* Continent::GetCId() { return id; }
 

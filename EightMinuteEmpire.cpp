@@ -253,8 +253,8 @@ Player* SetupPhase(Map* map, vector<Player*> players, Deck* deck, Hand* boardHan
 
 bool StartingRegionPhase(Map* map, vector<Player*> players)
 {
-	Region* region = map->GetRegion(STARTING_REGION);
 	Player* player;
+	Region* region = map->GetRegion(STARTING_REGION);
 
 	if (region == nullptr)
 	{
@@ -317,7 +317,7 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 				{
 					int move_count = readCard.second;
 
-					while (move_count > 0 || take == 'n' || take == 'N')
+					while (move_count > 0 && take != 'n')
 					{
 						int source = -1;
 						int destination = -1;
@@ -327,7 +327,7 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 
 						do
 						{
-							cout << "Move armies from region: ";
+							cout << "\nMove armies from region: ";
 							cin >> source;
 						} while (source <= 0);
 						do
@@ -341,13 +341,14 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 							cin >> armies_to_move;
 						} while (armies_to_move <= 0 || armies_to_move > move_count);
 
-						move_count = -armies_to_move;
+						move_count -= armies_to_move;
 
 						startingPlayer->MoveArmies(map, source, destination, armies_to_move);
 
 						cout << "Move more armies or yield your turn? (y/n): ";
 						cin >> take;
 					}
+					break;
 				}
 			} while (take == 'y' || take == 'n');
 		}

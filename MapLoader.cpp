@@ -201,7 +201,7 @@ bool MapLoader::LoadMap(Map* map, string file_path)
 				if (adj_id > 0 && cost > 0)
 				{
 					// must check that bi-directionality is enforced.
-					map->GetContinents().at(continent_id).GetRegions().at(region_id).AddAdjacent(*map->GetRegion(adj_id), cost);
+					map->GetContinents().at(continent_id).GetRegions().at(region_id)->AddAdjacent(*map->GetRegion(adj_id), cost);
 					adj_id = 0;
 					cost = 0;
 					continue;

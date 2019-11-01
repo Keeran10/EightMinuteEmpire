@@ -4,7 +4,9 @@
 // Default Constructor for PCs
 Player::Player() : name("player"), age(new int(0)), coins(new int(10)), cubes(new int(14)), discs(new int(3))
 {
+	this->color = "blue";
 	biddingFacility = new BiddingFacility();
+	armies.push_back(new Army(color, name));
 }
 
 // Constructor for NPCs
@@ -28,13 +30,12 @@ void Player::PlaceNewArmies(Map* map, Region* region, int num_armies)
 
 	while (ctr != 0)
 	{
-		Army* ptr = new Army(this->GetArmies().at(0)->GetColor(), this->name);
-		this->SetArmy(ptr);
-		region->SetArmy(ptr);
+		region->SetArmy(new Army(this->GetArmies().at(0)->GetColor(), this->name));
+		this->SetArmy(region->GetArmies()->at(region->GetArmies()->size() - 1));
 		ctr--;
 	}
 
-	cout << "Added " << num_armies << " to region " << region->GetId() << "." << endl;
+	cout << "\n" << this->GetName() << " added " << num_armies << " armies to region " << region->GetId() << "." << endl;
 }
 
 // Move a player's armies from one region to another.
@@ -84,7 +85,8 @@ void Player::MoveOverLand(Map* map, Region* src, Region* des)
 	{
 		if (armies[i]->GetOwner() == this->name) {
 			des->SetArmy(armies[i]);
-			src->GetArmies()->erase(armies.begin() + i);
+			src->GetArmies()->erase(src->GetArmies()->begin() + i);
+			armies.shrink_to_fit();
 			break;
 		}
 	}
@@ -100,7 +102,8 @@ void Player::MoveOverWater(Map* map, Region* src, Region* des)
 	{
 		if (armies[i]->GetOwner() == this->name) {
 			des->SetArmy(armies[i]);
-			src->GetArmies()->erase(armies.begin() + i);
+			src->GetArmies()->erase(src->GetArmies()->begin() + i);
+			armies.shrink_to_fit();
 			break;
 		}
 	}
