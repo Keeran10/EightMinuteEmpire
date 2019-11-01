@@ -63,7 +63,7 @@ class Player {
 		void MoveOverLand(Map* map, Region*, Region*);
 		void MoveOverWater(Map* map, Region*, Region*);
 		int BuildCity(Map* map, int region_id);
-		void DestroyArmy(Map* map, int region_id, string enemy);
+		int DestroyArmy(Map* map, int region_id, string enemy);
 		inline string GetColor() { return color; }
 		inline void SetColor(string color) { this->color = color; }
 		// Functions

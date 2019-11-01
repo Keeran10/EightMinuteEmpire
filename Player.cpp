@@ -202,14 +202,14 @@ int Player::BuildCity(Map* map, int region_id)
 }
 
 // destroys one army on a space the player occupies
-void Player::DestroyArmy(Map* map, int region_id, string enemy)
+int Player::DestroyArmy(Map* map, int region_id, string enemy)
 {
 	Region* region = map->GetRegion(region_id);
 
 	if (!region)
 	{
 		cout << "region does not exist. Abort..." << endl;
-		return;
+		return 0;
 	}
 
 	bool occupies = false;
@@ -227,7 +227,7 @@ void Player::DestroyArmy(Map* map, int region_id, string enemy)
 	if (!occupies)
 	{
 		cout << " You do not occupy region " << region_id << ". Abort..." << endl;
-		return;
+		return 0;
 	}
 
 	for (int i = 0; i < armies.size(); i++)
@@ -242,10 +242,11 @@ void Player::DestroyArmy(Map* map, int region_id, string enemy)
 	if (!isDestroyed)
 	{
 		cout << enemy << " does not have an army on region " << region_id << ". Abort..." << endl;
-		return;
+		return 0;
 	}
 
 	cout << "Successfully destroyed army belonging to " << enemy << " on region " << region_id << endl;
+	return 1;
 }
 
 
