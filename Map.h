@@ -39,7 +39,8 @@ private:
 	int id;
 	int continent_id;
 	// this might need to be refactored into map<player -> pair<armies, cities>>
-	string* owner;
+	string owner;
+	int assets;
 	// the int represents the cost of travel (either 1 for land or 3 for water)
 	typedef pair<Region, int> vertex;
 	vector<vertex>* adjacents;
@@ -52,8 +53,6 @@ public:
 	~Region();
 	Region(int id, int continent_id);
 	// Getters and Setters
-	string GetOwner();
-	void setOwner(string* owner);
 	int GetId() const;
 	int GetContinentId();
 	vector<vertex> GetAdjacents();
@@ -68,6 +67,10 @@ public:
 	inline void SetCity(City* city) { cities->push_back(city); }
 	inline vector<Army*>* GetArmies() { return armies; }
 	inline vector<City*>* GetCities() { return cities; }
+	inline string GetOwner() { return owner; }
+	inline void SetOwner(string name) { owner = name; }
+	inline int GetAssets() { return assets; }
+	inline void SetAssets(int a) { assets = a; }
 };
 
 
@@ -77,7 +80,8 @@ class Continent
 private:
 	int* id;
 	map<int, Region*>* regions;
-	
+	string owner;
+	int assets;
 public:
 	string s;
 	Continent();
@@ -86,7 +90,12 @@ public:
 	int GetId();
 	int* GetCId();
 	void AddRegion(Region* region);
+	void CheckController(string name);
 	map<int, Region*> GetRegions();
+	inline string GetOwner() { return owner; }
+	inline void SetOwner(string name) { owner = name; }
+	inline int GetAssets() { return assets; }
+	inline void SetAssets(int a) { assets = a; }
 };
 
 class Map
@@ -100,13 +109,14 @@ public:
 	void AddRegion(Region* region);
 	void AddContinent(Continent* continent);
 	Region* GetRegion(int region_id);
+	int CountControlledRegions(string name);
+	int CountControlledContinents(string name);
 	void PrintPlayerRegions(string name);
 	void PrintMap();
 };
 
 inline int Region::GetId() const { return id; }
 inline int Region::GetContinentId() { return continent_id; }
-inline string Region::GetOwner() { return *owner; }
 inline vector<pair<Region, int>> Region::GetAdjacents() { return *adjacents; }
 
 inline map<int, Region*> Continent::GetRegions(){ return *regions; }

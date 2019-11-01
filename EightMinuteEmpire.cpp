@@ -13,6 +13,11 @@ Player* SetupPhase(Map* map, vector<Player*> players, Deck* deck, Hand* boardHan
 bool StartingRegionPhase(Map* map, vector<Player*> players);
 void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck, Hand* boardHand);
 void PlayGame(Map* map, vector<Player*> players, Deck* deck);
+Player* ComputeGameScore(Map* map, vector<Player*> players);
+int ScoreGoods(Map* map, Player* player);
+int ScoreRegions(Map* map, Player* player);
+int ScoreContinents(Map* map, Player* player);
+string TieBreaker(Map* map, vector<Player*> players, string first, string second);
 
 const static int STARTING_REGION = 12;
 
@@ -209,7 +214,6 @@ void PlayGame(Map* map, vector<Player*> players, Deck* deck) {
 	if(valid_region)
 		PlayerTurnPhase(map, players, player_position, deck, boardHand);
 
-	delete boardHand;
 }
 
 Player* SetupPhase(Map* map, vector<Player*> players, Deck* deck, Hand* boardHand)
@@ -285,6 +289,18 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 	
 	do
 	{
+		Player* winner = ComputeGameScore(map, players);
+
+		if (winner)
+		{
+			cout << "\n-----------------------------------------" << endl;
+			cout << " AND THE WINNER IS ... " << endl;
+			cout << "-----------------------------------------" << endl;
+
+			cout << winner->GetName() << endl;
+			break;
+		}
+
 		bool or_invoked = false;
 		bool and_invoked = false;
 
@@ -401,7 +417,7 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 
 			if (take == 'n' || take == 'N')
 			{
-				break; // ignore action
+				
 			}
 			else
 				and_invoked = true;
@@ -632,4 +648,193 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 			position++;
 
 	} while (input != 'q');
+
+}
+
+Player* ComputeGameScore(Map* map, vector<Player*> players)
+{
+	int card_size = 0;
+	int card_count = 0;
+	bool end = false;
+
+	if (players.size() == 2)
+		card_size = 13;
+	if (players.size() == 3)
+		card_size = 10;
+	if (players.size() == 4)
+		card_size = 8;
+	if (players.size() == 5)
+		card_size = 7;
+
+
+	for (int i = 0; i < players.size(); i++)
+	{
+		if (players.at(i)->GetCards().size() == card_size)
+			card_count++;
+
+		cout << "\n" << players.at(i)->GetName() << "'s resources: (number of cards: " << players.at(i)->GetCards().size() << ")\n " <<
+			"(" << players.at(i)->CountResources("FOREST") << " Forests), " << 
+			"(" << players.at(i)->CountResources("CARROT") << " Carrots), " <<
+			"(" << players.at(i)->CountResources("ANVIL") << " Anvils), " <<
+			"(" << players.at(i)->CountResources("ORE") << " Ores), " <<
+			"(" << players.at(i)->CountResources("CRYSTAL") << " Crystals), " <<
+			"(" << players.at(i)->CountResources("WILD") << " Wilds)" <<
+		endl;
+		
+		if (card_count == players.size())
+		{
+			end = true;
+			break;
+		}
+
+	}
+
+	if (!end) return NULL;
+
+	vector<pair<string, int>> scores;
+
+	cout << "\n-----------------------------------------" << endl;
+	cout << "*FINAL SCORE* " << endl;
+	cout << "-----------------------------------------" << endl;
+
+	for (int i = 0; i < players.size(); i++)
+	{
+		pair<string, int> player_score;
+
+		int goods = 0;
+		int regions = 0;
+		int continents = 0;
+
+		player_score.first = players.at(i)->GetName();
+
+		goods = ScoreGoods(map, players.at(i));
+		regions = ScoreRegions(map, players.at(i));
+		continents = ScoreContinents(map, players.at(i));
+
+		player_score.second = goods + regions + continents;
+
+		scores.push_back(player_score);
+
+		cout << "\n" << player_score.first << "'s scores:\n" <<
+			"goods = " << goods <<
+			", regions = " << regions <<
+			", continents = " << continents <<
+			"\ntotal = " << player_score.second <<
+		endl;
+	}
+
+	pair<string, int> runnerUp;
+	pair<string, int> winningPlayer = scores[0];
+
+	for (unsigned int i = 1; i < players.size(); i++)
+	{
+		// Get player to compare to current winner
+		runnerUp = scores[i];
+		// Replace winner with runner up if the winner's points are lower
+		if (winningPlayer.second < runnerUp.second) {
+			winningPlayer = runnerUp;
+		}
+		// If the winner and runner up points are the same value, we invoke tiebreak
+		else if (winningPlayer.second == runnerUp.second) {
+			winningPlayer.first = TieBreaker(map, players, winningPlayer.first, runnerUp.first);
+		}
+	}
+
+	Player* winner = NULL;
+
+	for (unsigned int i = 1; i < players.size(); i++)
+	{
+		if (players.at(i)->GetName() == winningPlayer.first)
+			winner = players.at(i);
+	}
+	return winner;
+}
+
+int ScoreGoods(Map* map, Player* player)
+{
+	int score = 0;
+
+	int forest = player->CountResources("FOREST");
+	int carrot = player->CountResources("CARROT");
+	int anvil = player->CountResources("ANVIL");
+	int ore = player->CountResources("ORE");
+	int crystal = player->CountResources("CRYSTAL");
+	int wild = player->CountResources("WILD");
+	
+	if (forest >= 4){
+		score = score + 5;
+		forest = 0;
+	}
+	if (carrot >= 4) {
+		score = score + 5;
+		carrot = 0;
+	}
+	if (anvil >= 4) {
+		score = score + 5;
+		anvil = 0;
+	}
+	if (ore >= 4) {
+		score = score + 5;
+		ore = 0;
+	}
+	if (crystal >= 4) {
+		score = score + 5;
+		crystal = 0;
+	}
+
+	int temp = 3;
+	int bonus = 0;
+
+	while (wild > 0){
+
+		if (temp == 3) bonus = 5;
+		else bonus = temp + 1;
+
+		if (forest == temp) {
+			score = score + bonus;
+			forest = 0;
+			wild--;
+		}
+		else if (carrot == temp) {
+			score = score + bonus;
+			carrot = 0;
+			wild--;
+		}
+		else if (anvil == temp) {
+			score = score + bonus;
+			anvil = 0;
+			wild--;
+		}
+		else if (ore == temp) {
+			score = score + bonus;
+			ore = 0;
+			wild--;
+		}
+		else if (crystal == temp) {
+			score = score + bonus;
+			crystal = 0;
+			wild--;
+		}
+		else
+			temp--;
+	}
+
+	score = score + forest + carrot + anvil + ore + crystal;
+
+	return score;
+}
+
+int ScoreRegions(Map* map, Player* player)
+{
+	return map->CountControlledRegions(player->GetName());
+}
+
+int ScoreContinents(Map* map, Player* player)
+{
+	return map->CountControlledContinents(player->GetName());
+}
+
+string TieBreaker(Map* map, vector<Player*> players, string first, string second)
+{
+	return first;
 }

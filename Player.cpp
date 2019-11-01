@@ -74,6 +74,23 @@ int Player::AddArmies(Map* map, Region* region, int num_armies)
 	return 0;
 }
 
+// Count the number of each resources
+int Player::CountResources(string resource)
+{
+	int count = 0;
+	string two = "2";
+
+	for (int i = 0; i < cards.size(); i++)
+	{
+		if (resource == cards.at(i)->GetResource())
+			count++;
+		if (two + resource == cards.at(i)->GetResource())
+			count = count + 2;
+	}
+
+	return count;
+}
+
 // Place new armies on the map. Right now, I'm also adding to player's army vector. 
 void Player::PlaceNewArmies(Map* map, Region* region, int num_armies)
 {

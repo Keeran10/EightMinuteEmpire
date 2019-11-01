@@ -244,6 +244,9 @@ Card* Deck::draw()
 {
 	int size = cards->size();
 
+	if (size == 0)
+		return NULL;
+
 	int index = rand() % size;
 
 	Card* card = cards->at(index);
@@ -329,7 +332,10 @@ pair<Card*, int> Hand::Exchange(char index, int coins, Deck* deck)
 		hand->at(i) = hand->at(i + 1);
 	}
 
-	hand->push_back(deck->draw()); 
+	Card* drawCard = deck->draw();
+	
+	if(card)
+		hand->push_back(drawCard); 
 
 	cout << "\nBought card: { " << card->GetResource() << " & " << card->GetAction() << " } for " << cost << " cost." << endl;
 	
