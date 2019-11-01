@@ -281,7 +281,6 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 	do
 	{
 		Player* startingPlayer = players.at(position);
-		cout << "Here are the cards from the board.\n";
 
 		boardHand->PrintHand();
 
