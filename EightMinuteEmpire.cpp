@@ -306,6 +306,7 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 
 		string action = readCard.first;
 
+		// FIX THAT STUPID SEA BUG FROM 10 -> 3
 		if (action == "move_by_sea" || action == "move_by_land")
 		{
 			char take;
@@ -327,7 +328,8 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 						int destination = -1;
 						int armies_to_move = -1;
 
-						map->PrintPlayerRegions(startingPlayer->GetName()); 
+						for(Player* player : players)
+							map->PrintPlayerRegions(player->GetName()); 
 
 						do
 						{
