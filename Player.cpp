@@ -233,7 +233,7 @@ int Player::DestroyArmy(Map* map, int region_id, string enemy)
 	for (int i = 0; i < armies.size(); i++)
 	{
 		if (armies[i]->GetOwner() == enemy) {
-			region->GetArmies()->erase(armies.begin() + i);
+			region->GetArmies()->erase(region->GetArmies()->begin() + i);
 			isDestroyed = true;
 			break;
 		}

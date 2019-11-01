@@ -352,7 +352,39 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 		}
 		if (action == "build_or_destroy")
 		{
+			do {
+				cout << "\nWould you like to take the above action or ignore it? (y/n): ";
+				cin >> take;
 
+				if (take == 'n' || take == 'N')
+				{
+					break; // ignore action
+				}
+
+				int or_action = readCard.second;
+				string decision = "a";
+
+				do {
+					cout << "Do you want to build or destroy? (build|destroy): ";
+					cin >> decision;
+				} while (decision != "build" && decision != "destroy");
+
+				and_or = true;
+
+				if (decision == "destroy")
+				{
+					action = "destroy";
+					break;
+				}
+				else
+				{
+					action = "build";
+					break;
+				}
+
+				break;
+
+			} while (take == 'y' || take == 'n');
 		}
 		if (action == "add_and_destroy")
 		{
@@ -487,7 +519,7 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 					{
 						cout << "\nWhose army do you wish to destroy? ";
 						cin >> enemy;
-					} while (enemy != "CPU0" || enemy != "CPU1" || enemy != "CPU2" || enemy != "CPU3" || enemy != "CPU4");
+					} while (enemy != "CPU0" && enemy != "CPU1" && enemy != "CPU2" && enemy != "CPU3" && enemy != "CPU4");
 
 					do
 					{
