@@ -21,11 +21,16 @@ int main()
 	MapLoader* ml;
 	Map* map;
 	do {
-		std::cout << "Welcome to Eight Minute Empire, here are a list of the maps available.\n";
+		std::cout << "Welcome to Eight Minute Empire!\n";
+		string map_file = "invalid";
+		do {
+			cout << "Please enter your selected game map file from the directory (i.e. game_map.txt): ";
+			cin >> map_file;
+		} while (map_file == "invalid");
 		// cout the maps
 		//please select a map
 		//cin map by number
-		ml = new MapLoader("game_map.txt");
+		ml = new MapLoader(map_file);
 		map = ml->GetMap();
 	} while (!ml->getIsValid());
 
