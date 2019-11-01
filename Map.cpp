@@ -6,7 +6,7 @@ City::City()
 {
 }
 
-City::City(string color, string owner)
+City::City(string color, string owner) : color(color), owner(owner)
 {
 }
 
@@ -18,7 +18,7 @@ Army::Army()
 {
 }
 
-Army::Army(string color, string owner)
+Army::Army(string color, string owner) : color(color), owner(owner)
 {
 }
 
@@ -31,8 +31,8 @@ Region::Region(){}
 
 Region::Region(int region_id, int continent_id) 
 {	
-	id = new int(region_id);
-	this->continent_id = new int(continent_id);
+	id = region_id;
+	this->continent_id = continent_id;
 	adjacents = new std::vector<std::pair<Region, int>>();
 	armies = new vector<Army*>();
 	cities = new vector<City*>();
@@ -91,6 +91,30 @@ int Region::CountArmies(string name)
 	return ctr;
 }
 
+// Checks how many cities a specific user has on this region
+int Region::CountCities(string name)
+{
+	int ctr = 0;
+
+	for (City* city : *cities)
+	{
+		if (city->GetOwner() == name) ctr++;
+	}
+
+	return ctr;
+}
+
+void Region::PrintAdjacents()
+{
+	cout << "\nadjacents to region " << this->GetId() << ": ";
+	for (auto const& adjacent : *adjacents)
+	{
+		if(adjacent.second == 1)
+			std::cout << " region " << adjacent.first.GetId() << " by land, " ;
+		else
+			std::cout << " region " << adjacent.first.GetId() << " by ship, ";
+	}
+}
 
 // Continent member functions
 Continent::Continent(){}
@@ -98,7 +122,7 @@ Continent::Continent(){}
 Continent::Continent(int id) 
 { 
 	this->id = new int(id);
-	regions = new std::map<int, Region>();
+	regions = new std::map<int, Region*>();
 }
 
 Continent::~Continent()
@@ -113,11 +137,11 @@ void Continent::AddRegion(Region* region)
 		std::cout << "Invalid -- Region " << region->GetId() << " does not belong to continent " << this->GetId() << "." << std::endl;
 	}
 
-	std::map<int, Region>::iterator itr = regions->find(region->GetId());
+	std::map<int, Region*>::iterator itr = regions->find(region->GetId());
 
 	if (itr == regions->end())
 	{
-		regions->operator[]((*region).GetId()) = *region;
+		regions->operator[]((*region).GetId()) = region;
 		return;
 	}
 	std::cout << "Invalid -- Region " << region->GetId() << " already exists in continent " << region->GetContinentId() << "." << std::endl;
@@ -192,31 +216,41 @@ Region* Map::GetRegion(int region_id)
 	{
 		Continent continent = cit->second;
 
-		for (std::pair<int, Region> region_pair : continent.GetRegions())
+		for (std::pair<int, Region*> region_pair : continent.GetRegions())
 		{
-			if (region_pair.second.GetId() == region_id) 
+			if (region_pair.second->GetId() == region_id) 
 			{
-				return &region_pair.second;
+				return region_pair.second;
 			}
 		}
 	}
 	return NULL;
 }
 
-void Map::GetPlayerRegions(string name)
+void Map::PrintPlayerRegions(string name)
 {
-	cout << name << "'s regions: ";
+	cout << "\n" << name << "'s regions: ";
 
 	for (auto cit = continents->begin(); cit != continents->end(); cit++)
 	{
 		Continent continent = cit->second;
 
-		for (std::pair<int, Region> region_pair : continent.GetRegions())
+		for (std::pair<int, Region*> region_pair : continent.GetRegions())
 		{
-			int count = region_pair.second.CountArmies(name);
-			if (count > 0)
+			int count_armies = region_pair.second->CountArmies(name);
+			int count_cities = region_pair.second->CountCities(name);
+
+			if (count_armies > 0 && count_cities > 0)
 			{
-				cout << region_pair.second.GetId() << " (armies = " << count << "), ";
+				cout << region_pair.second->GetId() << " (" << count_armies << " armies, " << count_cities << " cities), ";
+			}
+			else if (count_armies > 0)
+			{
+				cout << region_pair.second->GetId() << " (" << count_armies << " armies), ";
+			}
+			else if (count_cities > 0)
+			{
+				cout << region_pair.second->GetId() << " (" << count_cities << " cities), ";
 			}
 		}
 	}
@@ -243,16 +277,16 @@ void Map::PrintMap() {
 		std::cout << "continent " << cit->second.GetId() << std::endl;
 		std::cout << "-----------------------------------------" << std::endl;
 
-		std::map<int, Region> regions = continent.GetRegions();
+		std::map<int, Region*> regions = continent.GetRegions();
 
 		for (auto rit = regions.begin(); rit != regions.end(); ++rit)
 		{
-			Region region = rit->second;
+			Region* region = rit->second;
 
-			std::cout << "region " << region.GetId() << " -> c" << region.GetContinentId() << std::endl;
+			std::cout << "region " << region->GetId() << " -> c" << region->GetContinentId() << std::endl;
 			std::cout << "adjacents: ";
 
-			std::vector<std::pair<Region, int>> adjacents = region.GetAdjacents();
+			std::vector<std::pair<Region, int>> adjacents = region->GetAdjacents();
 
 			for (auto const& adjacent : adjacents)
 			{

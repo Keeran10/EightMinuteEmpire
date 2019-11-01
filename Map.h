@@ -36,8 +36,8 @@ public:
 class Region 
 {
 private:
-	int* id;
-	int* continent_id;
+	int id;
+	int continent_id;
 	// this might need to be refactored into map<player -> pair<armies, cities>>
 	string* owner;
 	// the int represents the cost of travel (either 1 for land or 3 for water)
@@ -58,6 +58,8 @@ public:
 	int GetContinentId();
 	vector<vertex> GetAdjacents();
 	void AddAdjacent(Region region, int cost);
+	int CountCities(string name);
+	void PrintAdjacents();
 
 	// part 4
 	int IsAdjacent(Region region);
@@ -74,7 +76,7 @@ class Continent
 {
 private:
 	int* id;
-	map<int, Region>* regions;
+	map<int, Region*>* regions;
 	
 public:
 	string s;
@@ -84,7 +86,7 @@ public:
 	int GetId();
 	int* GetCId();
 	void AddRegion(Region* region);
-	map<int, Region> GetRegions();
+	map<int, Region*> GetRegions();
 };
 
 class Map
@@ -98,16 +100,16 @@ public:
 	void AddRegion(Region* region);
 	void AddContinent(Continent* continent);
 	Region* GetRegion(int region_id);
-	void GetPlayerRegions(string name);
+	void PrintPlayerRegions(string name);
 	void PrintMap();
 };
 
-inline int Region::GetId() const { return *id; }
-inline int Region::GetContinentId() { return *continent_id; }
+inline int Region::GetId() const { return id; }
+inline int Region::GetContinentId() { return continent_id; }
 inline string Region::GetOwner() { return *owner; }
 inline vector<pair<Region, int>> Region::GetAdjacents() { return *adjacents; }
 
-inline map<int, Region> Continent::GetRegions(){ return *regions; }
+inline map<int, Region*> Continent::GetRegions(){ return *regions; }
 inline int Continent::GetId() { return *id; }
 inline int* Continent::GetCId() { return id; }
 

@@ -12,7 +12,7 @@ class Player {
 	BiddingFacility* biddingFacility;
 	int *coins, *age, *cubes, *discs;
 	string name;
-	vector<string> countries;
+	string color;
 	vector<Army*> armies;
 	vector<City*> cities;
 	vector<Card*> cards;
@@ -20,7 +20,8 @@ class Player {
 		// Constructors & Destructor
 		Player();
 		~Player();
-		Player(string name, int age);
+		int AddArmies(Map* map, Region* region, int num_armies);
+		Player(string name, int age, string color);
 
 		// Getters & Setters
 		inline int GetCoins() { return *coins; }
@@ -49,11 +50,6 @@ class Player {
 		}
 		inline string GetName() { return name; }
 		inline void SetName(string name) { this->name = name; }
-		inline vector<string> GetCountriesVector() { return countries; }
-		inline void SetCountriesVector(vector<string> inputCountries) {
-			countries.clear();
-			countries = inputCountries;
-		}
 		inline BiddingFacility* GetBiddingFacility() { return biddingFacility; }
 
 		// part 4
@@ -62,12 +58,14 @@ class Player {
 		inline vector<Army*> GetArmies() { return armies; }
 		inline void SetArmy(Army* army) { armies.push_back(army); }
 		inline void SetCity(City* city) { cities.push_back(city); }
-		void PlaceNewArmies(Map* map, int region, int num_armies);
-		void MoveArmies(Map* map, int source, int destination, int armies_to_move);
+		void PlaceNewArmies(Map* map, Region* region, int num_armies);
+		int MoveArmies(Map* map, int source, int destination, int armies_to_move, string action);
 		void MoveOverLand(Map* map, Region*, Region*);
 		void MoveOverWater(Map* map, Region*, Region*);
-		void BuildCity(Map* map, int region_id);
-		void DestroyArmy(Map* map, int region_id, string enemy);
+		int BuildCity(Map* map, int region_id);
+		int DestroyArmy(Map* map, int region_id, string enemy);
+		inline string GetColor() { return color; }
+		inline void SetColor(string color) { this->color = color; }
 		// Functions
 		string PayCoin();
 		string PlaceNewArmies();

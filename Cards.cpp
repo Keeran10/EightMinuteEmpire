@@ -147,7 +147,7 @@ pair<string, int> Card::ReadCardAction()
 {
 	pair<string, int> read = { "default", 0 };
 
-	if (this->AND) return this->ReadCardActionOR();
+	if (this->AND) return this->ReadCardActionAND();
 	if (this->OR) return this->ReadCardActionOR();
 	
 	// move over water
@@ -175,14 +175,14 @@ pair<string, int> Card::ReadCardAction()
 	if (this->destroy)
 	{
 		read.first = "destroy";
-		read.second = 0;
+		read.second = 1;
 		return read;
 	}
 	// build a city
 	if (this->build)
 	{
 		read.first = "build";
-		read.second = 0;
+		read.second = 1;
 		return read;
 	}
 
@@ -207,7 +207,7 @@ pair<string, int> Card::ReadCardActionOR()
 	if (this->destroy && this->build)
 	{
 		read.first = "build_or_destroy";
-		read.second = 0;
+		read.second = 1;
 		return read;
 	}
 	
