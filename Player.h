@@ -21,6 +21,7 @@ class Player {
 		Player();
 		~Player();
 		int AddArmies(Map* map, Region* region, int num_armies);
+		int CountResources(string resource);
 		Player(string name, int age, string color);
 
 		// Getters & Setters

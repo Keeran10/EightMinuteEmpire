@@ -143,6 +143,7 @@ Deck::Deck(int num_players)
 	/**/
 }
 
+// sending pair rather than the card object seemed efficient at the time of implementation
 pair<string, int> Card::ReadCardAction()
 {
 	pair<string, int> read = { "default", 0 };
@@ -244,6 +245,9 @@ Card* Deck::draw()
 {
 	int size = cards->size();
 
+	if (size == 0)
+		return NULL;
+
 	int index = rand() % size;
 
 	Card* card = cards->at(index);
@@ -253,6 +257,7 @@ Card* Deck::draw()
 	return card;
 }
 
+// displays the deck
 void Deck::PrintDeck() 
 {
 	if (!cards) return;
@@ -329,7 +334,10 @@ pair<Card*, int> Hand::Exchange(char index, int coins, Deck* deck)
 		hand->at(i) = hand->at(i + 1);
 	}
 
-	hand->push_back(deck->draw()); 
+	Card* drawCard = deck->draw();
+	
+	if(card)
+		hand->push_back(drawCard); 
 
 	cout << "\nBought card: { " << card->GetResource() << " & " << card->GetAction() << " } for " << cost << " cost." << endl;
 	
@@ -339,6 +347,7 @@ pair<Card*, int> Hand::Exchange(char index, int coins, Deck* deck)
 	return card_cost;
 }
 
+// displays the cards on the board
 void Hand::PrintHand()
 {
 	if (!hand) return;
