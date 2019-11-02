@@ -1,5 +1,7 @@
 #pragma once
 #include "BiddingFacility.h"
+#include "Cards.h"
+#include "Map.h"
 #include <string>
 #include <vector>
 
@@ -10,13 +12,17 @@ class Player {
 	BiddingFacility* biddingFacility;
 	int *coins, *age, *cubes, *discs;
 	string name;
-	vector<string> countries;
-
+	string color;
+	vector<Army*> armies;
+	vector<City*> cities;
+	vector<Card*> cards;
 	public:
 		// Constructors & Destructor
 		Player();
 		~Player();
-		Player(string name, int age);
+		int AddArmies(Map* map, Region* region, int num_armies);
+		int CountResources(string resource);
+		Player(string name, int age, string color);
 
 		// Getters & Setters
 		inline int GetCoins() { return *coins; }
@@ -45,13 +51,22 @@ class Player {
 		}
 		inline string GetName() { return name; }
 		inline void SetName(string name) { this->name = name; }
-		inline vector<string> GetCountriesVector() { return countries; }
-		inline void SetCountriesVector(vector<string> inputCountries) {
-			countries.clear();
-			countries = inputCountries;
-		}
 		inline BiddingFacility* GetBiddingFacility() { return biddingFacility; }
 
+		// part 4
+		inline void SetCards(Card* card) { cards.push_back(card); }
+		inline vector<Card*> GetCards() { return cards; }
+		inline vector<Army*> GetArmies() { return armies; }
+		inline void SetArmy(Army* army) { armies.push_back(army); }
+		inline void SetCity(City* city) { cities.push_back(city); }
+		void PlaceNewArmies(Map* map, Region* region, int num_armies);
+		int MoveArmies(Map* map, int source, int destination, int armies_to_move, string action);
+		void MoveOverLand(Map* map, Region*, Region*);
+		void MoveOverWater(Map* map, Region*, Region*);
+		int BuildCity(Map* map, int region_id);
+		int DestroyArmy(Map* map, int region_id, string enemy);
+		inline string GetColor() { return color; }
+		inline void SetColor(string color) { this->color = color; }
 		// Functions
 		string PayCoin();
 		string PlaceNewArmies();

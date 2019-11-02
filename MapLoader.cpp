@@ -7,49 +7,48 @@ MapLoader::MapLoader() : map(nullptr)
 {
 }
 
-MapLoader::MapLoader(std::string file_path)
+MapLoader::MapLoader(string file_path)
 {
 	map = new Map();
-	LoadMap(map, file_path);
+	isValid = LoadMap(map, file_path);
 }
 
 MapLoader::~MapLoader()
 {
 	delete map;
 	map = NULL;
-	std::cout << "Deleted map from error file." << std::endl;
 }
 
-void CleanUp(int ERROR_CODE, std::string file_path, std::string line, MapLoader* ml)
+void CleanUp(int ERROR_CODE, string file_path, string line, MapLoader* ml)
 {
 	if (ERROR_CODE == 0)
-		std::cout << "Invalid map: " <<  file_path  << " -- File does not exist." << std::endl;
+		cout << "Invalid map: " <<  file_path  << " -- File does not exist." << endl;
 	if (ERROR_CODE == 1)
-		std::cout << "Invalid map: " << file_path << " -- Continent id expected, but received " << line << " instead." << std::endl;
+		cout << "Invalid map: " << file_path << " -- Continent id expected, but received " << line << " instead." << endl;
 	if (ERROR_CODE == 2)
-		std::cout << "Invalid map: " << file_path << " -- Continent id can't be negative or zero: " << line << std::endl;
+		cout << "Invalid map: " << file_path << " -- Continent id can't be negative or zero: " << line << endl;
 	if (ERROR_CODE == 3)
-		std::cout << "Invalid map: " << file_path << " -- Region id expected, but received " << line << " instead." << std::endl;
+		cout << "Invalid map: " << file_path << " -- Region id expected, but received " << line << " instead." << endl;
 	if (ERROR_CODE == 4)
-		std::cout << "Invalid map: " << file_path << " -- Region id can't be negative or zero: " << line << std::endl;
+		cout << "Invalid map: " << file_path << " -- Region id can't be negative or zero: " << line << endl;
 	if (ERROR_CODE == 5)
-		std::cout << "Invalid map: " << file_path << " -- Continent " << line << " was not initialized at the top." << std::endl;
+		cout << "Invalid map: " << file_path << " -- Continent " << line << " was not initialized at the top." << endl;
 	if (ERROR_CODE == 6)
-		std::cout << "Invalid map: " << file_path << " -- adjacent id expected, but received " << line << " instead." << std::endl;
+		cout << "Invalid map: " << file_path << " -- adjacent id expected, but received " << line << " instead." << endl;
 	if (ERROR_CODE == 7)
-		std::cout << "Invalid map: " << file_path << " -- cost expected, but received " << line << " instead." << std::endl;
+		cout << "Invalid map: " << file_path << " -- cost expected, but received " << line << " instead." << endl;
 	if (ERROR_CODE == 8)
-		std::cout << "Invalid map: " << file_path << " -- region " << line << " already exists." << std::endl;
+		cout << "Invalid map: " << file_path << " -- region " << line << " already exists." << endl;
 	if (ERROR_CODE == 9)
-		std::cout << "Invalid map: " << file_path << " -- Unrecognized input: " << line << std::endl;
+		cout << "Invalid map: " << file_path << " -- Unrecognized input: " << line << endl;
 
 	delete ml;
 }
 
-void MapLoader::LoadMap(Map* map, std::string file_path)
+bool MapLoader::LoadMap(Map* map, string file_path)
 {
-	std::ifstream file(file_path);
-	std::string line;
+	ifstream file(file_path);
+	string line;
 	int continent_id = 0;
 	int region_id = 0;
 	int adj_id(0), cost(0);
@@ -65,7 +64,7 @@ void MapLoader::LoadMap(Map* map, std::string file_path)
 	if (!file.is_open())
 	{
 		CleanUp(0, file_path, "", this);
-		return;
+		return false;
 	}
 
 	while (file >> line)
@@ -103,20 +102,20 @@ void MapLoader::LoadMap(Map* map, std::string file_path)
 		}
 		else if (line == "end")
 		{
-			std::cout << "Valid map: " << file_path << " -- SUCCESS." << std::endl;
-			return;
+			cout << "Valid map: " << file_path << " -- SUCCESS." << endl;
+			return true;
 		}
 
 		else if (parsingContinents)
 		{
 			try
 			{
-				continent_id = std::stoi(line);
+				continent_id = stoi(line);
 			}
 			catch (...)
 			{
 				CleanUp(1, file_path, line, this);
-				return;
+				return false;
 			}
 			if (continent_id > 0)
 			{
@@ -127,26 +126,26 @@ void MapLoader::LoadMap(Map* map, std::string file_path)
 			else
 			{
 				CleanUp(2, file_path, line, this);
-				return;
+				return false;
 			}
 		}
 		else if (parsingRegions)
 		{
 			try
 			{
-				region_id = std::stoi(line);
+				region_id = stoi(line);
 			}
 			catch (...)
 			{
 				CleanUp(3, file_path, line, this);
-				return;
+				return false;
 			}
 			if (region_id > 0)
 			{
 				if (map->GetRegion(region_id))
 				{
 					CleanUp(8, file_path, line, this);
-					return;
+					return false;
 				}
 				map->GetContinents().at(continent_id).AddRegion(new Region(region_id, continent_id));
 			}
@@ -154,7 +153,7 @@ void MapLoader::LoadMap(Map* map, std::string file_path)
 			{
 
 				CleanUp(4, file_path, line, this);
-				return;
+				return false;
 			}
 		}
 		else if (parsingAdjacents)
@@ -163,7 +162,7 @@ void MapLoader::LoadMap(Map* map, std::string file_path)
 			{
 				try
 				{
-					continent_id = std::stoi(line);
+					continent_id = stoi(line);
 
 					// Must check for non-existent continents
 					for (auto& continent_pair : map->GetContinents()) 
@@ -173,13 +172,13 @@ void MapLoader::LoadMap(Map* map, std::string file_path)
 					if(!continentLock)
 					{
 						CleanUp(5, file_path, line, this);
-						return;
+						return false;
 					}
 				}
 				catch (...)
 				{
 					CleanUp(1, file_path, line, this);
-					return;
+					return false;
 				}
 
 			}
@@ -187,14 +186,14 @@ void MapLoader::LoadMap(Map* map, std::string file_path)
 			{
 				try
 				{
-					region_id = std::stoi(line);
+					region_id = stoi(line);
 					regionLock = true;
 					continue;
 				}
 				catch (...)
 				{
 					CleanUp(3, file_path, line, this);
-					return;
+					return false;
 				}
 			}
 			else
@@ -202,7 +201,7 @@ void MapLoader::LoadMap(Map* map, std::string file_path)
 				if (adj_id > 0 && cost > 0)
 				{
 					// must check that bi-directionality is enforced.
-					map->GetContinents().at(continent_id).GetRegions().at(region_id).AddAdjacent(*map->GetRegion(adj_id), cost);
+					map->GetContinents().at(continent_id).GetRegions().at(region_id)->AddAdjacent(*map->GetRegion(adj_id), cost);
 					adj_id = 0;
 					cost = 0;
 					continue;
@@ -227,26 +226,26 @@ void MapLoader::LoadMap(Map* map, std::string file_path)
 				{
 					try
 					{
-						adj_id = std::stoi(line);
+						adj_id = stoi(line);
 						continue;
 					}
 					catch (...)
 					{
 						CleanUp(6, file_path, line, this);
-						return;
+						return false;
 					}	
 				}
 				if (costNext)
 				{
 					try
 					{
-						cost = std::stoi(line);
+						cost = stoi(line);
 						continue;
 					}
 					catch (...)
 					{
 						CleanUp(7, file_path, line, this);
-						return;
+						return false;
 					}
 				}
 			}
@@ -254,7 +253,7 @@ void MapLoader::LoadMap(Map* map, std::string file_path)
 		else 
 		{
 			CleanUp(9, file_path, line, this);
-			return;
+			return false;
 		}
 	}
 }

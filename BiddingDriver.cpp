@@ -33,6 +33,8 @@ Player* BiddingDriver::CalculateWinner(vector<Player*> players)
 			}
 		}
 	}
+	winningPlayer->SetCoins(winningPlayer->GetCoins() - winningPlayer->GetBiddingFacility()->GetBid());
+	cout << winningPlayer->GetName() << " has payed " << winningPlayer->GetBiddingFacility()->GetBid() << " to become the starting player." << endl;
 	return winningPlayer;
 }
 
@@ -40,10 +42,10 @@ void BiddingDriver::BiddingDriverGameLoop()
 {
 	// Create players
 	vector<Player*> cpus = {
-		new Player("CPU1", 15),
-		new Player("CPU2", 25),
-		new Player("CPU3", 20),
-		new Player("CPU4", 30)
+		new Player("CPU1", 15, "red"),
+		new Player("CPU2", 25, "orange"),
+		new Player("CPU3", 20, "brown"),
+		new Player("CPU4", 30, "green")
 	};
 
 	PrintPlayers(cpus);

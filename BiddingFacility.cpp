@@ -15,7 +15,7 @@ BiddingFacility::~BiddingFacility()
 }
 
 // Generate a random bid and set it to variable
-void BiddingFacility::RandomizeBid()
+void BiddingFacility::RandomizeBid(int coins)
 {
-	*bid = int(rand() % 11);
+	bid = int(rand() % (coins + 1));
 }

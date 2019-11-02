@@ -1,30 +1,57 @@
 #pragma once
 #include <iostream>
 #include <vector>
+#include <string>
+
+using namespace std;
+
+class Player;
 
 // Card class 
 class Card 
 {
 private:
-    std::string* resource;
-    std::string* action;
+    string resource;
+    string action;
+	// part 4
+	int move;
+	int add;
+	bool by_ship;
+	bool build;
+	bool destroy;
+	bool isFivePlayer;
+	bool OR;
+	bool AND;
 public:
 	Card();
-    Card(std::string resource, std::string action);
-    ~Card(); 
-	std::string GetResource();
-	std::string GetAction();
+	Card(string resource, string action, int move, int add, bool build, bool destroy, bool isFivePlayer, bool by_ship, bool OR, bool AND);
+    ~Card();
+	string GetResource();
+	string GetAction();
+	// part 4
+	pair<string, int> ReadCardAction();
+	pair<string, int> ReadCardActionOR();
+	pair<string, int> ReadCardActionAND();
+	inline int GetMove() { return move; }
+	inline int GetAdd() { return add; }
+	inline bool GetByShip() { return by_ship; }
+	inline bool GetBuild() { return build; }
+	inline bool GetDestroy() { return destroy; }
+	inline bool GetIsFivePlayer() { return isFivePlayer; }
+	inline bool GetOR() { return OR; }
+	inline bool GetAND() { return AND; }
 };
 
 //Deck Class
 class Deck {
 private:
-    std::vector<Card>* cards; 
+    vector<Card*>* cards; 
 public:
-    Deck();
+    Deck(int num_players);
+	Deck();
     ~Deck(); 
-	std::vector<Card>* GetDeck();
-    Card draw(); 
+	vector<Card*>* GetDeck();
+    Card* draw(); 
 	void PrintDeck();
 };
 
@@ -32,21 +59,21 @@ public:
 class Hand {
 private:
 	// pay the associated coin cost for that card (0,1,1,2,2,3)
-	std::vector<Card>* hand;
+	vector<Card*>* hand;
 public:
 	Hand();
 	Hand(Deck* deck); 
 	~Hand(); 
-	std::vector<Card>* GetHand();
-	Card* Exchange(int index, int coins, Deck* deck);
+	vector<Card*>* GetHand();
+	pair<Card*, int> Exchange(char index, int coins, Deck* deck);
 	void PrintHand();
 };
 
-inline std::string Card::GetResource() { return *resource; }
-inline std::string Card::GetAction() { return *action; }
+inline string Card::GetResource() { return resource; }
+inline string Card::GetAction() { return action; }
 
-inline std::vector<Card>* Deck::GetDeck() { return cards; }
+inline vector<Card*>* Deck::GetDeck() { return cards; }
 
-inline std::vector<Card>* Hand::GetHand() { return hand; }
+inline vector<Card*>* Hand::GetHand() { return hand; }
 
 void CardsDriver();

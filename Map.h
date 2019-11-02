@@ -3,19 +3,49 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <string>
+
+using namespace std;
 
 class Continent;
+
+class City
+{
+	string owner;
+	string color;
+public:
+	City();
+	City(string color, string owner);
+	~City();
+	inline string GetOwner() { return owner; }
+	inline string GetColor() { return color; }
+};
+
+class Army {
+
+	string color;
+	string owner;
+public:
+	Army();
+	Army(string color, string owner);
+	~Army();
+	inline string GetColor() { return color; }
+	inline string GetOwner() { return owner; }
+};
 
 class Region 
 {
 private:
-	int* id;
-	int* continent_id;
+	int id;
+	int continent_id;
 	// this might need to be refactored into map<player -> pair<armies, cities>>
-	std::string* owner;
+	string owner;
+	int assets;
 	// the int represents the cost of travel (either 1 for land or 3 for water)
-	typedef std::pair<Region, int> vertex;
-	std::vector<vertex>* adjacents;
+	typedef pair<Region, int> vertex;
+	vector<vertex>* adjacents;
+	vector<Army*>* armies;
+	vector<City*>* cities;
 
 public:
 	// Contructors & Destructors
@@ -23,12 +53,24 @@ public:
 	~Region();
 	Region(int id, int continent_id);
 	// Getters and Setters
-	std::string GetOwner();
-	void setOwner(std::string* owner);
 	int GetId() const;
 	int GetContinentId();
-	std::vector<vertex> GetAdjacents();
+	vector<vertex> GetAdjacents();
 	void AddAdjacent(Region region, int cost);
+	int CountCities(string name);
+	void PrintAdjacents();
+
+	// part 4
+	int IsAdjacent(Region region);
+	int CountArmies(string name);
+	inline void SetArmy(Army* army) { armies->push_back(army); }
+	inline void SetCity(City* city) { cities->push_back(city); }
+	inline vector<Army*>* GetArmies() { return armies; }
+	inline vector<City*>* GetCities() { return cities; }
+	inline string GetOwner() { return owner; }
+	inline void SetOwner(string name) { owner = name; }
+	inline int GetAssets() { return assets; }
+	inline void SetAssets(int a) { assets = a; }
 };
 
 
@@ -37,43 +79,52 @@ class Continent
 {
 private:
 	int* id;
-	std::map<int, Region>* regions;
-	
+	map<int, Region*>* regions;
+	string owner;
+	int assets;
 public:
-	std::string s;
+	string s;
 	Continent();
 	~Continent();
 	Continent(int id);
 	int GetId();
 	int* GetCId();
 	void AddRegion(Region* region);
-	std::map<int, Region> GetRegions();
+	void CheckController(string name);
+	map<int, Region*> GetRegions();
+	inline string GetOwner() { return owner; }
+	inline void SetOwner(string name) { owner = name; }
+	inline int GetAssets() { return assets; }
+	inline void SetAssets(int a) { assets = a; }
 };
 
 class Map
 {
 private:
-	std::map<int, Continent>* continents;
+	map<int, Continent>* continents;
 public:
 	Map();
 	~Map();
-	std::map<int, Continent> GetContinents();
+	map<int, Continent> GetContinents();
 	void AddRegion(Region* region);
 	void AddContinent(Continent* continent);
 	Region* GetRegion(int region_id);
+	int CountControlledRegions(string name);
+	int CountControlledContinents(string name);
+	int CountAllArmies(string name);
+	void PrintPlayerRegions(string name);
 	void PrintMap();
 };
 
-inline int Region::GetId() const { return *id; }
-inline int Region::GetContinentId() { return *continent_id; }
-inline std::string Region::GetOwner() { return *owner; }
-inline std::vector<std::pair<Region, int>> Region::GetAdjacents() { return *adjacents; }
+inline int Region::GetId() const { return id; }
+inline int Region::GetContinentId() { return continent_id; }
+inline vector<pair<Region, int>> Region::GetAdjacents() { return *adjacents; }
 
-inline std::map<int, Region> Continent::GetRegions(){ return *regions; }
+inline map<int, Region*> Continent::GetRegions(){ return *regions; }
 inline int Continent::GetId() { return *id; }
 inline int* Continent::GetCId() { return id; }
 
-inline std::map<int, Continent> Map::GetContinents() { return *continents;}
+inline map<int, Continent> Map::GetContinents() { return *continents;}
 
 void MapDriver();
 void MapLoaderDriver();
