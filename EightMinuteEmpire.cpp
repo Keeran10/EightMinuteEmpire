@@ -892,7 +892,8 @@ string TieBreaker(Map* map, vector<Player*> players, string first, string second
 
 			if (regions1 == regions2)
 			{
-				return "Tie";
+				// on the off-chance this is still a tie, the winning player remains so...
+				return first;
 			}
 			else if (regions1 > regions2)
 			{
