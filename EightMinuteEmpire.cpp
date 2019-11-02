@@ -293,12 +293,19 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 
 		if (winner)
 		{
-			cout << "\n-----------------------------------------" << endl;
-			cout << " AND THE WINNER IS ... " << endl;
-			cout << "-----------------------------------------" << endl;
+			if (winner->GetName() != "error") {
+				cout << "\n-----------------------------------------" << endl;
+				cout << " AND THE WINNER IS ... " << endl;
+				cout << "-----------------------------------------" << endl;
 
-			cout << winner->GetName() << endl;
-			break;
+				cout << winner->GetName() << endl;
+				break;
+			}
+			else 
+			{
+				cout << "Unexpected error. Abort..." << endl;
+				break;
+			}
 		}
 
 		bool or_invoked = false;
@@ -651,6 +658,9 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 
 }
 
+// displays the entire resource catalog of each player. When card limit has been reached (according to the eight minute rulebook),
+// the function computes the final game scores and displays it.
+// returns the winning player
 Player* ComputeGameScore(Map* map, vector<Player*> players)
 {
 	int card_size = 0;
@@ -740,7 +750,10 @@ Player* ComputeGameScore(Map* map, vector<Player*> players)
 		}
 	}
 
-	if (winningPlayer.first == "error") { return NULL; }
+	// handles unforeseen error that ends the game
+	if (winningPlayer.first == "error") { return new Player("error", 100, "white"); }
+
+	// handles a drawn game
 	if (winningPlayer.first == "tie") 
 	{ 
 		cout << "It's a tie" << endl;
@@ -757,6 +770,8 @@ Player* ComputeGameScore(Map* map, vector<Player*> players)
 	return winner;
 }
 
+// computes the total score of the resources. This calculation is based on the eight minute empire rulebook
+// players with wild cards are prompt to change them into the resources of their liking
 int ScoreGoods(Map* map, Player* player)
 {
 	int score = 0;
@@ -818,16 +833,20 @@ int ScoreGoods(Map* map, Player* player)
 	return score;
 }
 
+// computes and returns the number of controlled regions for a given player
 int ScoreRegions(Map* map, Player* player)
 {
 	return map->CountControlledRegions(player->GetName());
 }
 
+// computes and returns the number of controlled continents for a given player
 int ScoreContinents(Map* map, Player* player)
 {
 	return map->CountControlledContinents(player->GetName());
 }
 
+// final score tiebreak checks first if the coins are equal, then the number of armies and finally the number of controlled regions
+// in the off-chance there's still a tiebreak, the game will be drawn with no winners. 
 string TieBreaker(Map* map, vector<Player*> players, string first, string second)
 {
 	Player* player1 = NULL;
