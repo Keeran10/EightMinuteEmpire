@@ -143,6 +143,7 @@ Deck::Deck(int num_players)
 	/**/
 }
 
+// sending pair rather than the card object seemed efficient at the time of implementation
 pair<string, int> Card::ReadCardAction()
 {
 	pair<string, int> read = { "default", 0 };
@@ -256,6 +257,7 @@ Card* Deck::draw()
 	return card;
 }
 
+// displays the deck
 void Deck::PrintDeck() 
 {
 	if (!cards) return;
@@ -345,6 +347,7 @@ pair<Card*, int> Hand::Exchange(char index, int coins, Deck* deck)
 	return card_cost;
 }
 
+// displays the cards on the board
 void Hand::PrintHand()
 {
 	if (!hand) return;

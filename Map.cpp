@@ -105,6 +105,7 @@ int Region::CountCities(string name)
 	return ctr;
 }
 
+// displays a given region's adjacents
 void Region::PrintAdjacents()
 {
 	cout << "\nadjacents to region " << this->GetId() << ": ";
@@ -132,7 +133,8 @@ Continent::~Continent()
 {
 }
 
-
+// adds region to continent
+// used by maploader to instantiate game map
 void Continent::AddRegion(Region* region)
 {
 	if (region->GetContinentId() != this->GetId())
@@ -150,6 +152,7 @@ void Continent::AddRegion(Region* region)
 	std::cout << "Invalid -- Region " << region->GetId() << " already exists in continent " << region->GetContinentId() << "." << std::endl;
 }
 
+// validates if continent has changed ownership and sets the new owner
 void Continent::CheckController(string name)
 {
 	int count = 0;
@@ -185,6 +188,8 @@ Map::~Map()
 	continents = NULL;
 }
 
+// adds continent to game map
+// used by maploader to instantiate game map
 void Map::AddContinent(Continent* continent)
 {
 	if (!continent) 
@@ -204,6 +209,8 @@ void Map::AddContinent(Continent* continent)
 	continents->operator[](continent->GetId()) = *continent;
 }
 
+// adds region to game map
+// used by maploader to instantiate game map
 void Map::AddRegion(Region* region)
 {
 	if (!region)
@@ -232,6 +239,7 @@ void Map::AddRegion(Region* region)
 	continents->at(region->GetContinentId()).AddRegion(region);
 }
 
+// returns the region pointer given its id
 Region* Map::GetRegion(int region_id)
 {
 	for (auto cit = continents->begin(); cit != continents->end(); cit++)
@@ -249,6 +257,7 @@ Region* Map::GetRegion(int region_id)
 	return NULL;
 }
 
+// returns the number of regions under a player's control
 int Map::CountControlledRegions(string name)
 {
 	int count = 0;
@@ -267,6 +276,7 @@ int Map::CountControlledRegions(string name)
 	return count;
 }
 
+// returns the number of continents under a player's control
 int Map::CountControlledContinents(string name)
 {
 	int count = 0;
@@ -280,6 +290,7 @@ int Map::CountControlledContinents(string name)
 	return count;
 }
 
+// returns the number of armies on all regions combined
 int Map::CountAllArmies(string name)
 {
 	int count = 0;
@@ -298,6 +309,7 @@ int Map::CountAllArmies(string name)
 	return count;
 }
 
+// prints the regions, armies and cities of each players
 void Map::PrintPlayerRegions(string name)
 {
 	bool control_change = false;
@@ -355,6 +367,7 @@ void Map::PrintPlayerRegions(string name)
 	cout << endl;
 }
 
+// displays the game map
 void Map::PrintMap() {
 	
 	if (!this) 

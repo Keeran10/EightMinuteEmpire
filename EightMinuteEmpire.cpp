@@ -21,6 +21,7 @@ string TieBreaker(Map* map, vector<Player*> players, string first, string second
 
 const static int STARTING_REGION = 12;
 
+// Map is chosen, player info is set and the game starts
 int main()
 {
 	MapLoader* ml;
@@ -92,6 +93,7 @@ int main()
 	return 0;
 }
 
+// Assignment 1 driver
 void A1Drivers() {
 	char input = 'a';
 
@@ -216,6 +218,7 @@ void PlayGame(Map* map, vector<Player*> players, Deck* deck) {
 
 }
 
+// Bidding executed to find the starting player
 Player* SetupPhase(Map* map, vector<Player*> players, Deck* deck, Hand* boardHand)
 {
 	int coins = 0;
@@ -260,6 +263,7 @@ Player* SetupPhase(Map* map, vector<Player*> players, Deck* deck, Hand* boardHan
 	return startingPlayer;
 }
 
+// Players have 3 armies placed on a chosen starting region.
 bool StartingRegionPhase(Map* map, vector<Player*> players)
 {
 	Player* player;
@@ -283,6 +287,7 @@ bool StartingRegionPhase(Map* map, vector<Player*> players)
 	return true;
 }
 
+// Players take turn buying a card and invoking actions. 
 void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck, Hand* boardHand)
 {
 	char input = 'a';
