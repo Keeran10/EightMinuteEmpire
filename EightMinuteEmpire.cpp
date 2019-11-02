@@ -740,6 +740,13 @@ Player* ComputeGameScore(Map* map, vector<Player*> players)
 		}
 	}
 
+	if (winningPlayer.first == "error") { return NULL; }
+	if (winningPlayer.first == "tie") 
+	{ 
+		cout << "It's a tie" << endl;
+		return new Player("Tie", 100, "black"); 
+	}
+
 	Player* winner = NULL;
 
 	for (unsigned int i = 1; i < players.size(); i++)
@@ -760,7 +767,31 @@ int ScoreGoods(Map* map, Player* player)
 	int ore = player->CountResources("ORE");
 	int crystal = player->CountResources("CRYSTAL");
 	int wild = player->CountResources("WILD");
-	
+
+	if (wild > 0) 
+	{
+		string w = "resource";
+
+		do 
+		{
+			cout << endl;
+
+			do {
+				cout << player->GetName() << " you have " << wild << " wild card(s). Please add them one by one to your chosen resource (forest|carrot|anvil|ore|crystal): ";
+				cin >> w;
+			} while (w != "forest" && w != "carrot" && w != "anvil" && w != "ore" && w != "crystal");
+
+			if (w == "forest") forest++;
+			else if (w == "carrot") carrot++;
+			else if (w == "anvil") anvil++;
+			else if (w == "ore") ore++;
+			else if (w == "crystal") crystal++;
+
+			wild--;
+
+		} while (wild > 0);
+	}
+
 	if (forest >= 4){
 		score = score + 5;
 		forest = 0;
@@ -782,43 +813,6 @@ int ScoreGoods(Map* map, Player* player)
 		crystal = 0;
 	}
 
-	int temp = 3;
-	int bonus = 0;
-
-	while (wild > 0){
-
-		if (temp == 3) bonus = 5;
-		else bonus = temp + 1;
-
-		if (forest == temp) {
-			score = score + bonus;
-			forest = 0;
-			wild--;
-		}
-		else if (carrot == temp) {
-			score = score + bonus;
-			carrot = 0;
-			wild--;
-		}
-		else if (anvil == temp) {
-			score = score + bonus;
-			anvil = 0;
-			wild--;
-		}
-		else if (ore == temp) {
-			score = score + bonus;
-			ore = 0;
-			wild--;
-		}
-		else if (crystal == temp) {
-			score = score + bonus;
-			crystal = 0;
-			wild--;
-		}
-		else
-			temp--;
-	}
-
 	score = score + forest + carrot + anvil + ore + crystal;
 
 	return score;
@@ -836,5 +830,72 @@ int ScoreContinents(Map* map, Player* player)
 
 string TieBreaker(Map* map, vector<Player*> players, string first, string second)
 {
-	return first;
+	Player* player1 = NULL;
+	Player* player2 = NULL;
+
+	for (int i = 0; i < players.size(); i++)
+	{
+		if (players.at(i)->GetName() == first)
+			player1 = players.at(i);
+		if (players.at(i)->GetName() == second)
+			player2 = players.at(i);
+	}
+
+	int coins1 = player1->GetCoins();
+	int coins2 = player2->GetCoins();
+
+	cout << "Coins tiebreak !" << endl;
+	cout << first << ": " << coins1 << " coins." << endl;
+	cout << second << ": " << coins2 << " coins." << endl;
+
+	if(coins1 == coins2)
+	{
+		int armies1 = map->CountAllArmies(first);
+		int armies2 = map->CountAllArmies(second);
+
+		cout << "Armies tiebreak !" << endl;
+		cout << first << ": " << armies1 << " armies." << endl;
+		cout << second << ": " << armies2 << " armies." << endl;
+
+		if (armies1 == armies2)
+		{
+			int regions1 = map->CountControlledRegions(first);
+			int regions2 = map->CountControlledRegions(second);
+
+			cout << "Regions tiebreak !" << endl;
+			cout << first << ": " << regions1 << " regions." << endl;
+			cout << second << ": " << regions2 << " regions." << endl;
+
+			if (regions1 == regions2)
+			{
+				return "Tie";
+			}
+			else if (regions1 > regions2)
+			{
+				return first;
+			}
+			else if (regions1 < regions2) 
+			{
+				return second;
+			}
+		}
+		else if (armies1 > armies2)
+		{
+			return first;
+		}
+		else if (armies1 < armies2)
+		{
+			return second;
+		}
+	}
+	else if (player1->GetCoins() > player2->GetCoins())
+	{
+		return first;
+	}
+	else if (player1->GetCoins() < player2->GetCoins())
+	{
+		return second;
+	}
+
+	return "error";
 }

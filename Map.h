@@ -111,6 +111,7 @@ public:
 	Region* GetRegion(int region_id);
 	int CountControlledRegions(string name);
 	int CountControlledContinents(string name);
+	int CountAllArmies(string name);
 	void PrintPlayerRegions(string name);
 	void PrintMap();
 };

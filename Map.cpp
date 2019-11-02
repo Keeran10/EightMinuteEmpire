@@ -280,6 +280,24 @@ int Map::CountControlledContinents(string name)
 	return count;
 }
 
+int Map::CountAllArmies(string name)
+{
+	int count = 0;
+
+	for (auto cit = continents->begin(); cit != continents->end(); cit++)
+	{
+		Continent continent = cit->second;
+
+		for (std::pair<int, Region*> region_pair : continent.GetRegions())
+		{
+			count = count + region_pair.second->CountArmies(name);
+		}
+
+	}
+
+	return count;
+}
+
 void Map::PrintPlayerRegions(string name)
 {
 	bool control_change = false;
