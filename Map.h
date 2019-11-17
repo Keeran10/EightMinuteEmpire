@@ -102,10 +102,13 @@ class Map
 {
 private:
 	map<int, Continent>* continents;
+	static Map* mapInstance; //singleton instance (added for part 4 singleton)
 public:
 	Map();
 	~Map();
 	map<int, Continent> GetContinents();
+	static Map* getInstance(); //not sure what params to pass (added for part 4 singleton)
+	static void resetInstanceOfMap(); //added for part 4 singleton
 	void AddRegion(Region* region);
 	void AddContinent(Continent* continent);
 	Region* GetRegion(int region_id);
@@ -115,6 +118,20 @@ public:
 	void PrintPlayerRegions(string name);
 	void PrintMap();
 };
+
+/*
+class Singleton{
+private: 
+	Map *map;
+	Singleton();
+	virtual ~Singleton();
+	static Singleton* instance;
+public:
+	static Singleton* instance();
+	static void resetInstance();
+};
+
+*/
 
 inline int Region::GetId() const { return id; }
 inline int Region::GetContinentId() { return continent_id; }
