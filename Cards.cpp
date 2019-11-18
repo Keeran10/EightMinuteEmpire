@@ -143,6 +143,7 @@ Deck::Deck(int num_players)
 	/**/
 }
 
+//Create a 6 card deck to have hands for the driver
 Deck::Deck(string driverTest)
 {
 	cards = new vector<Card*>();

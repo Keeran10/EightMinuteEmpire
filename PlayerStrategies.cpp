@@ -38,7 +38,7 @@ char GreedyStrategy::selectCardFromHand(Hand* hand, string name, int coins)
 	vector<Card*> handCards = *hand->GetHand();
 
 	for (int i = 0; i < handCards.size(); i++) {
-		if (handCards[i]->GetAction().find("build") != string::npos || handCards[i]->GetAction().find("destroy") != string::npos) {
+		if (handCards[i]->GetAction().find("build") != string::npos || handCards[i]->GetAction().find("destroy") != string::npos) {//set the "basic" algorithm
 			possibleMoves.push_back(i);
 		}
 	}
@@ -63,7 +63,7 @@ char ModerateStrategy::selectCardFromHand(Hand* hand, string name, int coins)
 	vector<Card*> handCards = *hand->GetHand();
 
 	for (int i = 0; i < handCards.size(); i++) {
-		if (handCards[i]->GetAction().find("add") != string::npos || handCards[i]->GetAction().find("move") != string::npos) {
+		if (handCards[i]->GetAction().find("add") != string::npos || handCards[i]->GetAction().find("move") != string::npos) { //set the "basic" algorithm
 			possibleMoves.push_back(i);
 		}
 	}
