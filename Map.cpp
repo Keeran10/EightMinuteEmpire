@@ -163,13 +163,14 @@ void Continent::CheckController(string name)
 			count++;
 	}
 
+
 	if (count > this->assets)
 	{
 		this->assets = count;
 		this->owner = name;
 	}
 
-	if (count == this->assets)
+	else if (count == this->assets && this->owner != name)
 	{
 		this->owner = "none";
 	}
@@ -295,9 +296,9 @@ int Map::CountControlledContinents(string name)
 {
 	int count = 0;
 
-	for (auto cit = continents->begin(); cit != continents->end(); cit++)
+	for (pair<int, Continent> continent_pair : *this->continents)
 	{
-		if (cit->second.GetOwner() == name)
+		if (continent_pair.second.GetOwner() == name)
 			count++;
 	}
 
@@ -351,10 +352,14 @@ void Map::PrintPlayerRegions(string name)
 				region_pair.second->SetAssets(assets);
 				region_pair.second->SetOwner(name);
 				control_change = true;
+
+				this->GetRegion(region_pair.second->GetId())->SetOwner(name);
+				this->GetRegion(region_pair.second->GetId())->SetAssets(assets);
+
 				cout << "Region " << region_pair.second->GetId() << " controlled by " << name << endl;
 			}
 
-			if (region_pair.second->GetAssets() == assets)
+			else if (region_pair.second->GetAssets() == assets && region_pair.second->GetOwner() != name)
 			{
 				region_pair.second->SetOwner("none");
 				control_change = true;
@@ -376,11 +381,11 @@ void Map::PrintPlayerRegions(string name)
 
 		if (control_change)
 		{
+			this->continents->at(continent.GetId()).CheckController(name);
 			continent.CheckController(name);
 			control_change = false;
 		}
 	}
-
 	cout << endl;
 }
 
