@@ -143,6 +143,40 @@ Deck::Deck(int num_players)
 	/**/
 }
 
+//Create a 6 card deck to have hands for the driver
+Deck::Deck(string driverTest)
+{
+	cards = new vector<Card*>();
+	Card* card1;
+	Card* card2;
+	Card* card3;
+	Card* card4;
+	Card* card5;
+	Card* card6;
+	if (driverTest == "greed") {
+		card1 = new Card("FOREST", "move 3 armies", 3);
+		card2 = new Card("FOREST", "move 3 armies", 3);
+		card3 = new Card("FOREST", "move 3 armies", 3);
+		card4 = new Card("FOREST", "move 3 armies", 3);
+		card5 = new Card("FOREST", "move 3 armies", 3);
+		card6 = new Card("FOREST", "build city", 0, 0, false, true);
+	}
+	else if (driverTest == "moderate") {
+		card1 = new Card("FOREST", "move 3 armies", 3);
+		card2 = new Card("FOREST", "build city", 0, 0, false, true);
+		card3 = new Card("FOREST", "build city", 0, 0, false, true);
+		card4 = new Card("FOREST", "build city", 0, 0, false, true);
+		card5 = new Card("FOREST", "build city", 0, 0, false, true);
+		card6 = new Card("FOREST", "build city", 0, 0, false, true);
+	}
+	cards->push_back(card1);
+	cards->push_back(card2);
+	cards->push_back(card3);
+	cards->push_back(card4);
+	cards->push_back(card5);
+	cards->push_back(card6);
+}
+
 // sending pair rather than the card object seemed efficient at the time of implementation
 pair<string, int> Card::ReadCardAction()
 {

@@ -51,6 +51,7 @@ private:
 public:
     Deck(int num_players);
 	Deck();
+	Deck(string driverTest);
     ~Deck(); 
 	vector<Card*>* GetDeck();
     Card* draw(); 

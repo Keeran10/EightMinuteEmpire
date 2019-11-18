@@ -19,6 +19,7 @@ int ScoreGoods(Map* map, Player* player);
 int ScoreRegions(Map* map, Player* player);
 int ScoreContinents(Map* map, Player* player);
 string TieBreaker(Map* map, vector<Player*> players, string first, string second);
+void StrategyDriver();
 
 const static int STARTING_REGION = 12;
 
@@ -29,16 +30,26 @@ int main()
 	Map* map;
 	do {
 		std::cout << "Welcome to Eight Minute Empire!\n";
-		string map_file = "invalid";
-		do {
-			cout << "Please enter your selected game map file from the directory (i.e. game_map.txt): ";
-			cin >> map_file;
-		} while (map_file == "invalid");
-		// cout the maps
-		//please select a map
-		//cin map by number
-		ml = new MapLoader(map_file);
-		map = ml->GetMap();
+		std::cout << "Enter d for the driver or anything else to play.\n";
+		char c = 'a';
+		cin >> c;
+		if (c == 'd') {
+			StrategyDriver();
+			return 0;
+		}
+		else {
+
+			string map_file = "invalid";
+			do {
+				cout << "Please enter your selected game map file from the directory (i.e. game_map.txt): ";
+				cin >> map_file;
+			} while (map_file == "invalid");
+			// cout the maps
+			//please select a map
+			//cin map by number
+			ml = new MapLoader(map_file);
+			map = ml->GetMap();
+		}
 	} while (!ml->getIsValid());
 
 	
@@ -948,4 +959,50 @@ string TieBreaker(Map* map, vector<Player*> players, string first, string second
 	}
 
 	return "error";
+}
+
+void StrategyDriver(){
+	cout << "Greed players choose cards with build or destroy\n";
+	Player* player = new Player("greed", 10, "blue", new GreedyStrategy());
+	Deck* deck = new Deck("greed");
+	Hand* boardHand = new Hand(deck);
+	boardHand->PrintHand();
+
+	char input = player->GetStrategy()->selectCardFromHand(boardHand, player->GetName(), player->GetCoins());
+	pair<Card*, int> card_cost = boardHand->Exchange(input, player->GetCoins(), deck);
+
+	delete deck, boardHand, player;
+
+	cout << "\nModerate players choose cards with move or add\n";
+	player = new Player("moderate", 10, "blue", new ModerateStrategy());
+	deck = new Deck("moderate");
+	boardHand = new Hand(deck);
+	boardHand->PrintHand();
+
+	input = player->GetStrategy()->selectCardFromHand(boardHand, player->GetName(), player->GetCoins());
+	card_cost = boardHand->Exchange(input, player->GetCoins(), deck);
+
+	delete deck, boardHand;
+
+	deck = new Deck("moderate");
+	boardHand = new Hand(deck);
+	string testerInput;
+	cout << "\nThe moderate player remains and the limited deck has been reshuffled";
+	boardHand->PrintHand();
+	cout << "\n\nEnter 'greed', 'morederate', or anything else for human to change the strategy used.";
+	cin >> testerInput;
+
+	if (testerInput == "greed") {
+		player->replaceStrategy(new GreedyStrategy());
+	}
+	else if (testerInput == "moderate") {
+		player->replaceStrategy(new ModerateStrategy());
+	}
+	else {
+		player->replaceStrategy(new HumanStrategy());
+	}
+
+	input = player->GetStrategy()->selectCardFromHand(boardHand, player->GetName(), player->GetCoins());
+	card_cost = boardHand->Exchange(input, player->GetCoins(), deck);
+	delete deck, boardHand, player;
 }

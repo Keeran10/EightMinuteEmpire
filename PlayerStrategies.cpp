@@ -38,7 +38,7 @@ char GreedyStrategy::selectCardFromHand(Hand* hand, string name, int coins)
 	vector<Card*> handCards = *hand->GetHand();
 
 	for (int i = 0; i < handCards.size(); i++) {
-		if (handCards[i]->GetAction().find("build") != string::npos || handCards[i]->GetAction().find("destroy") != string::npos) {
+		if (handCards[i]->GetAction().find("build") != string::npos || handCards[i]->GetAction().find("destroy") != string::npos) {//set the "basic" algorithm
 			possibleMoves.push_back(i);
 		}
 	}
@@ -63,7 +63,7 @@ char ModerateStrategy::selectCardFromHand(Hand* hand, string name, int coins)
 	vector<Card*> handCards = *hand->GetHand();
 
 	for (int i = 0; i < handCards.size(); i++) {
-		if (handCards[i]->GetAction().find("add") != string::npos || handCards[i]->GetAction().find("move") != string::npos) {
+		if (handCards[i]->GetAction().find("add") != string::npos || handCards[i]->GetAction().find("move") != string::npos) { //set the "basic" algorithm
 			possibleMoves.push_back(i);
 		}
 	}
@@ -81,7 +81,7 @@ char getBestMove(vector<int> possibleMoves, int coins) {
 	else {
 		for (int i = possibleMoves.size() - 1; i >= 0; i--) { //get least expensive card
 			if (possibleMoves[i] <= coins / 2) {
-				input = '0'+ possibleMoves[i];
+				input = '0'+ (possibleMoves[i] + 1);
 			}
 		}
 		if (input == '0') {//take free card if moves are too expensive
