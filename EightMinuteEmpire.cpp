@@ -56,24 +56,37 @@ int main()
 	std::uniform_real_distribution<double> dist(5.0, 100.0);
 
 	for (int i = 0; i < cpus; i++) {
-		players.push_back(new Player("CPU" + std::to_string(i), (int)dist(mt), colors.at(i)));
+		string inputStrategy;
+		std::cout << "Please choose a strategy for the CPU (human, greedy, moderate)";
+		std::cin >> inputStrategy;
+
+		PlayerStrategies* strategy;
+
+		if (inputStrategy == "greedy") {
+			strategy = new GreedyStrategy();
+		}
+		else if (inputStrategy == "moderate") {
+			strategy = new ModerateStrategy();
+		}
+		else {
+			strategy = new HumanStrategy();
+		}
+
+		players.push_back(new Player("CPU" + std::to_string(i), (int)dist(mt), colors.at(i), strategy));
 	}
 
-	Player* player = new Player();
 	string name = "";
 	int age = 0;
-	player->SetColor("blue");
 
 	std::cout << "Please enter the player name: ";
 	std::cin >> name;
-	player->SetName(name);
 
 	do {
 		std::cout << "Please enter the player age (5-100): ";
 		std::cin >> age;
 	} while (age > 100 || age < 5);
-	player->SetAge(age);
 
+	Player* player =new Player(name, age, "blue", new HumanStrategy());
 	players.push_back(player);
 
 	std::cout << "Here is the map and the players you will be playing with\n\n";
@@ -142,8 +155,8 @@ void A1Drivers() {
 void UserPlaysDriver() {
 
 	// Create players
-	Player* cpu1 = new Player("CPU1", 15, "violet");
-	Player* cpu2 = new Player("CPU2", 20, "purple");
+	Player* cpu1 = new Player("CPU1", 15, "violet", new HumanStrategy());
+	Player* cpu2 = new Player("CPU2", 20, "purple", new HumanStrategy());
 	Player* player = new Player();
 	string name;
 	int age, bid;
@@ -334,9 +347,7 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 		//boardHand->PrintHand();
 		startingPlayer->Notify();
 
-		cout << startingPlayer->GetName() << " select a card from the board from positions 1 to 6: ";
-
-		cin >> input;
+		input = startingPlayer->GetStrategy()->selectCardFromHand(boardHand, startingPlayer->GetName(), startingPlayer->GetCoins());
 
 		pair<Card*, int> card_cost = boardHand->Exchange(input, startingPlayer->GetCoins(), deck);
 
@@ -770,13 +781,13 @@ Player* ComputeGameScore(Map* map, vector<Player*> players)
 	}
 
 	// handles unforeseen error that ends the game
-	if (winningPlayer.first == "error") { return new Player("error", 100, "white"); }
+	if (winningPlayer.first == "error") { return new Player("error", 100, "white", new HumanStrategy()); }
 
 	// handles a drawn game
 	if (winningPlayer.first == "tie") 
 	{ 
 		cout << "It's a tie" << endl;
-		return new Player("Tie", 100, "black"); 
+		return new Player("Tie", 100, "black", new HumanStrategy()); 
 	}
 
 	Player* winner = NULL;

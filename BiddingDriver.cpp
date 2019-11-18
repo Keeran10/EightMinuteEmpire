@@ -42,10 +42,10 @@ void BiddingDriver::BiddingDriverGameLoop()
 {
 	// Create players
 	vector<Player*> cpus = {
-		new Player("CPU1", 15, "red"),
-		new Player("CPU2", 25, "orange"),
-		new Player("CPU3", 20, "brown"),
-		new Player("CPU4", 30, "green")
+		new Player("CPU1", 15, "red", new HumanStrategy()),
+		new Player("CPU2", 25, "orange", new HumanStrategy()),
+		new Player("CPU3", 20, "brown", new HumanStrategy()),
+		new Player("CPU4", 30, "green", new HumanStrategy())
 	};
 
 	PrintPlayers(cpus);
