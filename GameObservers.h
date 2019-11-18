@@ -36,3 +36,16 @@ public:
 	int ScoreRegions();
 	int ScoreContinents();
 };
+
+class ConquerorView : public Observer {
+
+private:
+	Map* map;
+	vector<Player*> players;
+
+public:
+	ConquerorView();
+	ConquerorView(vector<Player*> players, Map* map);
+	~ConquerorView();
+	void Update();
+};
