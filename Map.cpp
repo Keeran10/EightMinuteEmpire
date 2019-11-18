@@ -176,10 +176,24 @@ void Continent::CheckController(string name)
 
 }
 
+Map* Map:: mapInstance = NULL; //added for part4 singleton 
 // Map
 Map::Map() 
 {
 	continents = new std::map<int, Continent>();
+}
+
+/*
+added for part 4 singleton
+*/
+Map* Map:: getInstance(){
+	if (mapInstance == NULL){
+		mapInstance = new Map();//not sure what params to pass. 
+	}
+	else {
+		std:: cout<< "The instance of the map has been created. Please try again!";
+	}
+	return mapInstance;
 }
 
 Map::~Map()
@@ -314,13 +328,16 @@ void Map::PrintPlayerRegions(string name)
 {
 	bool control_change = false;
 
-	cout << "\n" << name << "'s regions:\n";
+	cout << "\n-----------------------------------------" << endl;
+	cout << "*" << name << "'s REGIONS*\n";
+	cout << "-----------------------------------------";
+	
 
 	for (auto cit = continents->begin(); cit != continents->end(); cit++)
 	{
 		Continent continent = cit->second;
 
-		cout << "\nContinent " << continent.GetId() << ":\n";
+		cout << "\nContinent " << continent.GetId() << ": ";
 
 		for (std::pair<int, Region*> region_pair : continent.GetRegions())
 		{

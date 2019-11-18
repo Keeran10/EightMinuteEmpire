@@ -1,4 +1,5 @@
 #pragma once
+#include "Subject.h"
 #include "BiddingFacility.h"
 #include "Cards.h"
 #include "Map.h"
@@ -7,7 +8,7 @@
 
 using namespace std;
 
-class Player {
+class Player : public Subject {
 	// Properties
 	BiddingFacility* biddingFacility;
 	int *coins, *age, *cubes, *discs;
