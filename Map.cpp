@@ -332,6 +332,7 @@ int Map::CountAllArmies(string name)
 // prints the regions, armies and cities of each players
 void Map::PrintPlayerRegions(string name)
 {
+	int sr = 12;
 
 	cout << "\n-----------------------------------------" << endl;
 	cout << "*" << name << "'s REGIONS*\n";
@@ -373,6 +374,7 @@ void Map::PrintPlayerRegions(string name)
 				this->GetRegion(region_pair.second->GetId())->SetOwner("none");
 				this->GetRegion(region_pair.second->GetId())->SetAssets(assets);
 			}
+			
 
 			if (count_armies > 0 && count_cities > 0)
 			{

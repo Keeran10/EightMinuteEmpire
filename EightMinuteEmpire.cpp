@@ -318,14 +318,19 @@ bool StartingRegionPhase(Map* map, vector<Player*> players)
 // Players take turn buying a card and invoking actions. 
 void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck, Hand* boardHand)
 {
+	// stats and phase view observers
 	for (Player* player : players) {
 		PhaseView* phaseView = new PhaseView(player, boardHand);
 		StatsView* statsView = new StatsView(player, map);
 		player->Attach(statsView);
 		player->Attach(phaseView);
 		boardHand->Attach(phaseView);
-		map->Attach(statsView);
+		//map->Attach(statsView);
 	}
+
+	// conqueror view observer
+	ConquerorView* conquerorView = new ConquerorView(players, map);
+	map->Attach(conquerorView);
 
 	char input = 'a';
 	
@@ -356,6 +361,7 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 		Player* startingPlayer = players.at(position);
 
 		//boardHand->PrintHand();
+		map->Notify();
 		startingPlayer->Notify();
 
 		input = startingPlayer->GetStrategy()->selectCardFromHand(boardHand, startingPlayer->GetName(), startingPlayer->GetCoins());

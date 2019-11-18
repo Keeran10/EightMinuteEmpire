@@ -15,6 +15,7 @@ PhaseView::~PhaseView()
 
 void PhaseView::Update()
 {
+	cout << "\nPhase View:";
 	_hand_subject->PrintHand();
 }
 
@@ -33,8 +34,8 @@ StatsView::~StatsView()
 
 void StatsView::Update()
 {
-	_map_subject->PrintPlayerRegions(_player_subject->GetName());
 	cout << endl;
+	cout << "Game Statistics View:" << endl;
 	DisplayResources();
 	cout << endl;
 	ComputeGameScore();
@@ -122,4 +123,25 @@ int StatsView::ScoreContinents()
 	int cont = _map_subject->CountControlledContinents(_player_subject->GetName());
 	cout << "Continents count = " << cont << endl;
 	return cont;
+}
+
+ConquerorView::ConquerorView()
+{
+}
+
+ConquerorView::ConquerorView(vector<Player*> players, Map* map):
+	players(players), map(map)
+{
+}
+
+ConquerorView::~ConquerorView()
+{
+}
+
+void ConquerorView::Update()
+{
+	cout << "\nConqueror View:";
+
+	for(Player* player : players)
+		map->PrintPlayerRegions(player->GetName());
 }
