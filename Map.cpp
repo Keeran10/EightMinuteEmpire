@@ -314,13 +314,16 @@ void Map::PrintPlayerRegions(string name)
 {
 	bool control_change = false;
 
-	cout << "\n" << name << "'s regions:\n";
+	cout << "\n-----------------------------------------" << endl;
+	cout << "*" << name << "'s REGIONS*\n";
+	cout << "-----------------------------------------";
+	
 
 	for (auto cit = continents->begin(); cit != continents->end(); cit++)
 	{
 		Continent continent = cit->second;
 
-		cout << "\nContinent " << continent.GetId() << ":\n";
+		cout << "\nContinent " << continent.GetId() << ": ";
 
 		for (std::pair<int, Region*> region_pair : continent.GetRegions())
 		{

@@ -6,6 +6,7 @@
 #include "Cards.h"
 #include "Map.h"
 #include "MapLoader.h"
+#include "GameObservers.h"
 #include <random>
 
 void UserPlaysDriver();
@@ -277,26 +278,38 @@ bool StartingRegionPhase(Map* map, vector<Player*> players)
 
 	cout << "\n-----------------------------------------" << endl;
 	cout << "*STARTING REGION " << STARTING_REGION << "*"<< endl;
-	cout << "-----------------------------------------" << endl;
+	cout << "-----------------------------------------";
 
 	for (int i = 0; i < players.size(); i++)
 	{
 		player = players.at(i);
 		player->PlaceNewArmies(map, region, 3);
 	}
+
+	cout << endl;
+
 	return true;
 }
 
 // Players take turn buying a card and invoking actions. 
 void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck, Hand* boardHand)
 {
+	for (Player* player : players) {
+		PhaseView* phaseView = new PhaseView(player, boardHand);
+		StatsView* statsView = new StatsView(player, map);
+		player->Attach(statsView);
+		player->Attach(phaseView);
+		boardHand->Attach(phaseView);
+		map->Attach(statsView);
+	}
+
 	char input = 'a';
 	
 	do
 	{
 		Player* winner = ComputeGameScore(map, players);
 
-		if (winner)
+		if (winner != NULL)
 		{
 			if (winner->GetName() != "error") {
 				cout << "\n-----------------------------------------" << endl;
@@ -318,7 +331,8 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 
 		Player* startingPlayer = players.at(position);
 
-		boardHand->PrintHand();
+		//boardHand->PrintHand();
+		startingPlayer->Notify();
 
 		cout << startingPlayer->GetName() << " select a card from the board from positions 1 to 6: ";
 
@@ -686,7 +700,7 @@ Player* ComputeGameScore(Map* map, vector<Player*> players)
 	{
 		if (players.at(i)->GetCards().size() == card_size)
 			card_count++;
-
+		/**
 		cout << "\n" << players.at(i)->GetName() << "'s resources: (number of cards: " << players.at(i)->GetCards().size() << ")\n " <<
 			"(" << players.at(i)->CountResources("FOREST") << " Forests), " << 
 			"(" << players.at(i)->CountResources("CARROT") << " Carrots), " <<
@@ -695,7 +709,7 @@ Player* ComputeGameScore(Map* map, vector<Player*> players)
 			"(" << players.at(i)->CountResources("CRYSTAL") << " Crystals), " <<
 			"(" << players.at(i)->CountResources("WILD") << " Wilds)" <<
 		endl;
-		
+		*/
 		if (card_count == players.size())
 		{
 			end = true;

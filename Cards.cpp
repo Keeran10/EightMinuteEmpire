@@ -230,6 +230,7 @@ pair<string, int> Card::ReadCardActionAND()
 	return read;
 }
 
+
 /*
 Destructor for Deck class
 */

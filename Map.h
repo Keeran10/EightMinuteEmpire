@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Subject.h"
 #include <iostream>
 #include <vector>
 #include <map>
@@ -98,7 +98,7 @@ public:
 	inline void SetAssets(int a) { assets = a; }
 };
 
-class Map
+class Map : public Subject
 {
 private:
 	map<int, Continent>* continents;
