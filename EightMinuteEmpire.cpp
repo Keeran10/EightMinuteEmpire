@@ -1004,4 +1004,5 @@ void StrategyDriver(){
 
 	input = player->GetStrategy()->selectCardFromHand(boardHand, player->GetName(), player->GetCoins());
 	card_cost = boardHand->Exchange(input, player->GetCoins(), deck);
+	delete deck, boardHand, player;
 }
