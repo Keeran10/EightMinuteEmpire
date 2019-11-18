@@ -133,6 +133,26 @@ public:
 
 */
 
+class Singleton
+{
+private:
+	static Map* map;
+	static Singleton* s_instance;
+	Singleton();
+
+public:
+	inline Map* GetMap() { return map; }
+	inline void SetMap(Map* map) { 
+			this->map = map; 
+	}
+	static Singleton* instance()
+	{
+		if (!s_instance)
+			s_instance = new Singleton();
+		return s_instance;
+	}
+};
+
 inline int Region::GetId() const { return id; }
 inline int Region::GetContinentId() { return continent_id; }
 inline vector<pair<Region, int>> Region::GetAdjacents() { return *adjacents; }

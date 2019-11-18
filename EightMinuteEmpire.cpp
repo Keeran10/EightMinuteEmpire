@@ -20,6 +20,7 @@ int ScoreRegions(Map* map, Player* player);
 int ScoreContinents(Map* map, Player* player);
 string TieBreaker(Map* map, vector<Player*> players, string first, string second);
 void StrategyDriver();
+void SingletonDriver();
 
 const static int STARTING_REGION = 12;
 
@@ -30,11 +31,15 @@ int main()
 	Map* map;
 	do {
 		std::cout << "Welcome to Eight Minute Empire!\n";
-		std::cout << "Enter d for the driver or anything else to play.\n";
+		std::cout << "Enter [d] for strategy driver and [s] for singleton driver or anything else to play.\n";
 		char c = 'a';
 		cin >> c;
 		if (c == 'd') {
 			StrategyDriver();
+			return 0;
+		}
+		else if (c == 's') {
+			SingletonDriver();
 			return 0;
 		}
 		else {
@@ -48,6 +53,7 @@ int main()
 			//please select a map
 			//cin map by number
 			ml = new MapLoader(map_file);
+			Singleton::instance()->SetMap(ml->GetMap());
 			map = ml->GetMap();
 		}
 	} while (!ml->getIsValid());
@@ -1011,4 +1017,14 @@ void StrategyDriver(){
 	input = player->GetStrategy()->selectCardFromHand(boardHand, player->GetName(), player->GetCoins());
 	card_cost = boardHand->Exchange(input, player->GetCoins(), deck);
 	delete deck, boardHand, player;
+}
+
+
+void SingletonDriver() {
+
+	MapLoader* ml = new MapLoader("game_map.txt");
+
+	Singleton::instance()->SetMap(ml->GetMap());
+
+	Singleton::instance()->GetMap()->PrintMap(); 
 }

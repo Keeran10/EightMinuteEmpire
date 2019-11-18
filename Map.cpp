@@ -491,3 +491,7 @@ void MapLoaderDriver()
 
 	ml->GetMap()->PrintMap();
 }
+
+Singleton::Singleton() {}
+Map* Singleton::map;
+Singleton* Singleton::s_instance;
