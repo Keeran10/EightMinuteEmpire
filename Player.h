@@ -5,12 +5,14 @@
 #include "Map.h"
 #include <string>
 #include <vector>
+#include "PlayerStrategies.h"
 
 using namespace std;
 
 class Player : public Subject {
 	// Properties
 	BiddingFacility* biddingFacility;
+	PlayerStrategies* strategy;
 	int *coins, *age, *cubes, *discs;
 	string name;
 	string color;
@@ -23,7 +25,7 @@ class Player : public Subject {
 		~Player();
 		int AddArmies(Map* map, Region* region, int num_armies);
 		int CountResources(string resource);
-		Player(string name, int age, string color);
+		Player(string name, int age, string color, PlayerStrategies* strategy);
 
 		// Getters & Setters
 		inline int GetCoins() { return *coins; }
@@ -53,6 +55,7 @@ class Player : public Subject {
 		inline string GetName() { return name; }
 		inline void SetName(string name) { this->name = name; }
 		inline BiddingFacility* GetBiddingFacility() { return biddingFacility; }
+		inline PlayerStrategies* GetStrategy() { return strategy; }
 
 		// part 4
 		inline void SetCards(Card* card) { cards.push_back(card); }
