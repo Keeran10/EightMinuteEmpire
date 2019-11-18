@@ -3,7 +3,7 @@
 
 using namespace std;
 
-int main(){
+void SingletonDriver(){
     cout<< "Please select the first map"<<endl;
     Map* firstMap = MapLoader::GetMap();
 
@@ -12,7 +12,5 @@ int main(){
 
     cout<<"The pointer to map 1 is: "<<firstMap<<endl;
     cout<<"The pointer to map 2 is: "<<secondMap<<endl;
-
-
 
 }

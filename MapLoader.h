@@ -4,7 +4,7 @@
 class MapLoader
 {
 private:
-	Map* map;
+	static Map* map;
 	bool isValid;
 	
 public:

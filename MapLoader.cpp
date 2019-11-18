@@ -3,7 +3,7 @@
 #include <fstream>
 #include "MapLoader.h"
 
-MapLoader::MapLoader() : map(nullptr)
+MapLoader::MapLoader()
 {
 }
 
