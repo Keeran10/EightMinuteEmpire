@@ -781,7 +781,7 @@ Player* ComputeGameScore(Map* map, vector<Player*> players)
 
 	Player* winner = NULL;
 
-	for (unsigned int i = 1; i < players.size(); i++)
+	for (unsigned int i = 0; i < players.size(); i++)
 	{
 		if (players.at(i)->GetName() == winningPlayer.first)
 			winner = players.at(i);
