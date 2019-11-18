@@ -175,6 +175,11 @@ void Continent::CheckController(string name)
 		this->owner = "none";
 	}
 
+	else if (count == 0 && this->owner == name) {
+
+		this->owner = "none";
+	}
+
 }
 
 Map* Map:: mapInstance = NULL; //added for part4 singleton 
@@ -327,7 +332,6 @@ int Map::CountAllArmies(string name)
 // prints the regions, armies and cities of each players
 void Map::PrintPlayerRegions(string name)
 {
-	bool control_change = false;
 
 	cout << "\n-----------------------------------------" << endl;
 	cout << "*" << name << "'s REGIONS*\n";
@@ -349,9 +353,8 @@ void Map::PrintPlayerRegions(string name)
 
 			if (region_pair.second->GetAssets() < assets)
 			{
-				region_pair.second->SetAssets(assets);
-				region_pair.second->SetOwner(name);
-				control_change = true;
+				//region_pair.second->SetAssets(assets);
+				//region_pair.second->SetOwner(name);
 
 				this->GetRegion(region_pair.second->GetId())->SetOwner(name);
 				this->GetRegion(region_pair.second->GetId())->SetAssets(assets);
@@ -361,8 +364,14 @@ void Map::PrintPlayerRegions(string name)
 
 			else if (region_pair.second->GetAssets() == assets && region_pair.second->GetOwner() != name)
 			{
-				region_pair.second->SetOwner("none");
-				control_change = true;
+				this->GetRegion(region_pair.second->GetId())->SetOwner("none");
+				this->GetRegion(region_pair.second->GetId())->SetAssets(assets);
+			}
+
+			else if (region_pair.second->GetAssets() > assets && region_pair.second->GetOwner() == name)
+			{
+				this->GetRegion(region_pair.second->GetId())->SetOwner("none");
+				this->GetRegion(region_pair.second->GetId())->SetAssets(assets);
 			}
 
 			if (count_armies > 0 && count_cities > 0)
@@ -379,12 +388,8 @@ void Map::PrintPlayerRegions(string name)
 			}
 		}
 
-		if (control_change)
-		{
-			this->continents->at(continent.GetId()).CheckController(name);
-			continent.CheckController(name);
-			control_change = false;
-		}
+		this->continents->at(continent.GetId()).CheckController(name);
+	
 	}
 	cout << endl;
 }
