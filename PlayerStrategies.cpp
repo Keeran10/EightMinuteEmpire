@@ -81,7 +81,7 @@ char getBestMove(vector<int> possibleMoves, int coins) {
 	else {
 		for (int i = possibleMoves.size() - 1; i >= 0; i--) { //get least expensive card
 			if (possibleMoves[i] <= coins / 2) {
-				input = '0'+ possibleMoves[i];
+				input = '0'+ (possibleMoves[i] + 1);
 			}
 		}
 		if (input == '0') {//take free card if moves are too expensive

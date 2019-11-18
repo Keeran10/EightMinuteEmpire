@@ -56,6 +56,7 @@ class Player : public Subject {
 		inline void SetName(string name) { this->name = name; }
 		inline BiddingFacility* GetBiddingFacility() { return biddingFacility; }
 		inline PlayerStrategies* GetStrategy() { return strategy; }
+		inline void replaceStrategy(PlayerStrategies* strategy) { this->strategy = strategy; }
 
 		// part 4
 		inline void SetCards(Card* card) { cards.push_back(card); }

@@ -28,7 +28,7 @@ class ModerateStrategy : public PlayerStrategies {
 		ModerateStrategy();
 		~ModerateStrategy();
 		char selectCardFromHand(Hand* hand, string name, int coins);
-	//if card.actions.contains move armies place armies
+	//if card.actions.contains move armies or place armies
 };
 
 char getBestMove(vector<int> possibleMoves, int coins);
