@@ -1,15 +1,18 @@
 #pragma once
+#include "Subject.h"
 #include "BiddingFacility.h"
 #include "Cards.h"
 #include "Map.h"
 #include <string>
 #include <vector>
+#include "PlayerStrategies.h"
 
 using namespace std;
 
-class Player {
+class Player : public Subject {
 	// Properties
 	BiddingFacility* biddingFacility;
+	PlayerStrategies* strategy;
 	int *coins, *age, *cubes, *discs;
 	string name;
 	string color;
@@ -22,7 +25,7 @@ class Player {
 		~Player();
 		int AddArmies(Map* map, Region* region, int num_armies);
 		int CountResources(string resource);
-		Player(string name, int age, string color);
+		Player(string name, int age, string color, PlayerStrategies* strategy);
 
 		// Getters & Setters
 		inline int GetCoins() { return *coins; }
@@ -52,6 +55,8 @@ class Player {
 		inline string GetName() { return name; }
 		inline void SetName(string name) { this->name = name; }
 		inline BiddingFacility* GetBiddingFacility() { return biddingFacility; }
+		inline PlayerStrategies* GetStrategy() { return strategy; }
+		inline void replaceStrategy(PlayerStrategies* strategy) { this->strategy = strategy; }
 
 		// part 4
 		inline void SetCards(Card* card) { cards.push_back(card); }

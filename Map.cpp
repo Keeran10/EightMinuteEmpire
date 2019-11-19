@@ -163,23 +163,43 @@ void Continent::CheckController(string name)
 			count++;
 	}
 
+
 	if (count > this->assets)
 	{
 		this->assets = count;
 		this->owner = name;
 	}
 
-	if (count == this->assets)
+	else if (count == this->assets && this->owner != name)
 	{
+		this->owner = "none";
+	}
+
+	else if (count == 0 && this->owner == name) {
+
 		this->owner = "none";
 	}
 
 }
 
+Map* Map:: mapInstance = NULL; //added for part4 singleton 
 // Map
 Map::Map() 
 {
 	continents = new std::map<int, Continent>();
+}
+
+/*
+added for part 4 singleton
+*/
+Map* Map:: getInstance(){
+	if (mapInstance == NULL){
+		mapInstance = new Map();//not sure what params to pass. 
+	}
+	else {
+		std:: cout<< "The instance of the map has been created. Please try again!";
+	}
+	return mapInstance;
 }
 
 Map::~Map()
@@ -281,9 +301,9 @@ int Map::CountControlledContinents(string name)
 {
 	int count = 0;
 
-	for (auto cit = continents->begin(); cit != continents->end(); cit++)
+	for (pair<int, Continent> continent_pair : *this->continents)
 	{
-		if (cit->second.GetOwner() == name)
+		if (continent_pair.second.GetOwner() == name)
 			count++;
 	}
 
@@ -312,15 +332,18 @@ int Map::CountAllArmies(string name)
 // prints the regions, armies and cities of each players
 void Map::PrintPlayerRegions(string name)
 {
-	bool control_change = false;
+	int sr = 12;
 
-	cout << "\n" << name << "'s regions:\n";
+	cout << "\n-----------------------------------------" << endl;
+	cout << "*" << name << "'s REGIONS*\n";
+	cout << "-----------------------------------------";
+	
 
 	for (auto cit = continents->begin(); cit != continents->end(); cit++)
 	{
 		Continent continent = cit->second;
 
-		cout << "\nContinent " << continent.GetId() << ":\n";
+		cout << "\nContinent " << continent.GetId() << ": ";
 
 		for (std::pair<int, Region*> region_pair : continent.GetRegions())
 		{
@@ -331,17 +354,27 @@ void Map::PrintPlayerRegions(string name)
 
 			if (region_pair.second->GetAssets() < assets)
 			{
-				region_pair.second->SetAssets(assets);
-				region_pair.second->SetOwner(name);
-				control_change = true;
+				//region_pair.second->SetAssets(assets);
+				//region_pair.second->SetOwner(name);
+
+				this->GetRegion(region_pair.second->GetId())->SetOwner(name);
+				this->GetRegion(region_pair.second->GetId())->SetAssets(assets);
+
 				cout << "Region " << region_pair.second->GetId() << " controlled by " << name << endl;
 			}
 
-			if (region_pair.second->GetAssets() == assets)
+			else if (region_pair.second->GetAssets() == assets && region_pair.second->GetOwner() != name)
 			{
-				region_pair.second->SetOwner("none");
-				control_change = true;
+				this->GetRegion(region_pair.second->GetId())->SetOwner("none");
+				this->GetRegion(region_pair.second->GetId())->SetAssets(assets);
 			}
+
+			else if (region_pair.second->GetAssets() > assets && region_pair.second->GetOwner() == name)
+			{
+				this->GetRegion(region_pair.second->GetId())->SetOwner("none");
+				this->GetRegion(region_pair.second->GetId())->SetAssets(assets);
+			}
+			
 
 			if (count_armies > 0 && count_cities > 0)
 			{
@@ -357,13 +390,9 @@ void Map::PrintPlayerRegions(string name)
 			}
 		}
 
-		if (control_change)
-		{
-			continent.CheckController(name);
-			control_change = false;
-		}
+		this->continents->at(continent.GetId()).CheckController(name);
+	
 	}
-
 	cout << endl;
 }
 
@@ -462,3 +491,7 @@ void MapLoaderDriver()
 
 	ml->GetMap()->PrintMap();
 }
+
+Singleton::Singleton() {}
+Map* Singleton::map;
+Singleton* Singleton::s_instance;

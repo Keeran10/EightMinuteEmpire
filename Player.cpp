@@ -28,9 +28,10 @@ Player::Player() : name("player"), age(new int(0)), coins(new int(10)), cubes(ne
 }
 
 // Constructor for NPCs
-Player::Player(string name, int age, string color) : name(name), age(new int(age)), coins(new int(10)), cubes(new int(14)), discs(new int(3))
+Player::Player(string name, int age, string color, PlayerStrategies* strategy) : name(name), age(new int(age)), coins(new int(10)), cubes(new int(14)), discs(new int(3))
 {
 	this->color = color;
+	this->strategy = strategy;
 	biddingFacility = new BiddingFacility();
 
 	armies.push_back(new Army(color, name));
@@ -56,7 +57,7 @@ Player::Player(string name, int age, string color) : name(name), age(new int(age
 // Default Destructor
 Player::~Player()
 {
-	delete age, coins, cubes, discs, biddingFacility;
+	delete age, coins, cubes, discs, biddingFacility, strategy;
 }
 
 // verify that a city exists on region before adding armies through PlaceNewArmies()

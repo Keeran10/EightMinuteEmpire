@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Subject.h"
 #include <iostream>
 #include <vector>
 #include <map>
@@ -98,14 +98,17 @@ public:
 	inline void SetAssets(int a) { assets = a; }
 };
 
-class Map
+class Map : public Subject
 {
 private:
 	map<int, Continent>* continents;
+	static Map* mapInstance; //singleton instance (added for part 4 singleton)
 public:
 	Map();
 	~Map();
 	map<int, Continent> GetContinents();
+	static Map* getInstance(); //not sure what params to pass (added for part 4 singleton)
+	static void resetInstanceOfMap(); //added for part 4 singleton
 	void AddRegion(Region* region);
 	void AddContinent(Continent* continent);
 	Region* GetRegion(int region_id);
@@ -114,6 +117,40 @@ public:
 	int CountAllArmies(string name);
 	void PrintPlayerRegions(string name);
 	void PrintMap();
+};
+
+/*
+class Singleton{
+private: 
+	Map *map;
+	Singleton();
+	virtual ~Singleton();
+	static Singleton* instance;
+public:
+	static Singleton* instance();
+	static void resetInstance();
+};
+
+*/
+
+class Singleton
+{
+private:
+	static Map* map;
+	static Singleton* s_instance;
+	Singleton();
+
+public:
+	inline Map* GetMap() { return map; }
+	inline void SetMap(Map* map) { 
+			this->map = map; 
+	}
+	static Singleton* instance()
+	{
+		if (!s_instance)
+			s_instance = new Singleton();
+		return s_instance;
+	}
 };
 
 inline int Region::GetId() const { return id; }

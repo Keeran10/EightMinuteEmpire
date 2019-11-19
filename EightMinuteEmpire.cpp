@@ -6,6 +6,7 @@
 #include "Cards.h"
 #include "Map.h"
 #include "MapLoader.h"
+#include "GameObservers.h"
 #include <random>
 
 void UserPlaysDriver();
@@ -18,6 +19,8 @@ int ScoreGoods(Map* map, Player* player);
 int ScoreRegions(Map* map, Player* player);
 int ScoreContinents(Map* map, Player* player);
 string TieBreaker(Map* map, vector<Player*> players, string first, string second);
+void StrategyDriver();
+void SingletonDriver();
 
 const static int STARTING_REGION = 12;
 
@@ -28,16 +31,31 @@ int main()
 	Map* map;
 	do {
 		std::cout << "Welcome to Eight Minute Empire!\n";
-		string map_file = "invalid";
-		do {
-			cout << "Please enter your selected game map file from the directory (i.e. game_map.txt): ";
-			cin >> map_file;
-		} while (map_file == "invalid");
-		// cout the maps
-		//please select a map
-		//cin map by number
-		ml = new MapLoader(map_file);
-		map = ml->GetMap();
+		std::cout << "Enter [d] for strategy driver and [s] for singleton driver or anything else to play.\n";
+		char c = 'a';
+		cin >> c;
+		if (c == 'd') {
+			StrategyDriver();
+			return 0;
+		}
+		else if (c == 's') {
+			SingletonDriver();
+			return 0;
+		}
+		else {
+
+			string map_file = "invalid";
+			do {
+				cout << "Please enter your selected game map file from the directory (i.e. game_map.txt): ";
+				cin >> map_file;
+			} while (map_file == "invalid");
+			// cout the maps
+			//please select a map
+			//cin map by number
+			ml = new MapLoader(map_file);
+			Singleton::instance()->SetMap(ml->GetMap());
+			map = ml->GetMap();
+		}
 	} while (!ml->getIsValid());
 
 	
@@ -55,24 +73,37 @@ int main()
 	std::uniform_real_distribution<double> dist(5.0, 100.0);
 
 	for (int i = 0; i < cpus; i++) {
-		players.push_back(new Player("CPU" + std::to_string(i), (int)dist(mt), colors.at(i)));
+		string inputStrategy;
+		std::cout << "Please choose a strategy for the CPU (human, greedy, moderate)";
+		std::cin >> inputStrategy;
+
+		PlayerStrategies* strategy;
+
+		if (inputStrategy == "greedy") {
+			strategy = new GreedyStrategy();
+		}
+		else if (inputStrategy == "moderate") {
+			strategy = new ModerateStrategy();
+		}
+		else {
+			strategy = new HumanStrategy();
+		}
+
+		players.push_back(new Player("CPU" + std::to_string(i), (int)dist(mt), colors.at(i), strategy));
 	}
 
-	Player* player = new Player();
 	string name = "";
 	int age = 0;
-	player->SetColor("blue");
 
 	std::cout << "Please enter the player name: ";
 	std::cin >> name;
-	player->SetName(name);
 
 	do {
 		std::cout << "Please enter the player age (5-100): ";
 		std::cin >> age;
 	} while (age > 100 || age < 5);
-	player->SetAge(age);
 
+	Player* player =new Player(name, age, "blue", new HumanStrategy());
 	players.push_back(player);
 
 	std::cout << "Here is the map and the players you will be playing with\n\n";
@@ -141,8 +172,8 @@ void A1Drivers() {
 void UserPlaysDriver() {
 
 	// Create players
-	Player* cpu1 = new Player("CPU1", 15, "violet");
-	Player* cpu2 = new Player("CPU2", 20, "purple");
+	Player* cpu1 = new Player("CPU1", 15, "violet", new HumanStrategy());
+	Player* cpu2 = new Player("CPU2", 20, "purple", new HumanStrategy());
 	Player* player = new Player();
 	string name;
 	int age, bid;
@@ -277,26 +308,43 @@ bool StartingRegionPhase(Map* map, vector<Player*> players)
 
 	cout << "\n-----------------------------------------" << endl;
 	cout << "*STARTING REGION " << STARTING_REGION << "*"<< endl;
-	cout << "-----------------------------------------" << endl;
+	cout << "-----------------------------------------";
 
 	for (int i = 0; i < players.size(); i++)
 	{
 		player = players.at(i);
 		player->PlaceNewArmies(map, region, 3);
 	}
+
+	cout << endl;
+
 	return true;
 }
 
 // Players take turn buying a card and invoking actions. 
 void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck, Hand* boardHand)
 {
+	// stats and phase view observers
+	for (Player* player : players) {
+		PhaseView* phaseView = new PhaseView(player, boardHand);
+		StatsView* statsView = new StatsView(player, map);
+		player->Attach(statsView);
+		player->Attach(phaseView);
+		boardHand->Attach(phaseView);
+		//map->Attach(statsView);
+	}
+
+	// conqueror view observer
+	ConquerorView* conquerorView = new ConquerorView(players, map);
+	map->Attach(conquerorView);
+
 	char input = 'a';
 	
 	do
 	{
 		Player* winner = ComputeGameScore(map, players);
 
-		if (winner)
+		if (winner != NULL)
 		{
 			if (winner->GetName() != "error") {
 				cout << "\n-----------------------------------------" << endl;
@@ -318,11 +366,11 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 
 		Player* startingPlayer = players.at(position);
 
-		boardHand->PrintHand();
+		//boardHand->PrintHand();
+		map->Notify();
+		startingPlayer->Notify();
 
-		cout << startingPlayer->GetName() << " select a card from the board from positions 1 to 6: ";
-
-		cin >> input;
+		input = startingPlayer->GetStrategy()->selectCardFromHand(boardHand, startingPlayer->GetName(), startingPlayer->GetCoins());
 
 		pair<Card*, int> card_cost = boardHand->Exchange(input, startingPlayer->GetCoins(), deck);
 
@@ -686,7 +734,7 @@ Player* ComputeGameScore(Map* map, vector<Player*> players)
 	{
 		if (players.at(i)->GetCards().size() == card_size)
 			card_count++;
-
+		/**
 		cout << "\n" << players.at(i)->GetName() << "'s resources: (number of cards: " << players.at(i)->GetCards().size() << ")\n " <<
 			"(" << players.at(i)->CountResources("FOREST") << " Forests), " << 
 			"(" << players.at(i)->CountResources("CARROT") << " Carrots), " <<
@@ -695,7 +743,7 @@ Player* ComputeGameScore(Map* map, vector<Player*> players)
 			"(" << players.at(i)->CountResources("CRYSTAL") << " Crystals), " <<
 			"(" << players.at(i)->CountResources("WILD") << " Wilds)" <<
 		endl;
-		
+		*/
 		if (card_count == players.size())
 		{
 			end = true;
@@ -756,18 +804,18 @@ Player* ComputeGameScore(Map* map, vector<Player*> players)
 	}
 
 	// handles unforeseen error that ends the game
-	if (winningPlayer.first == "error") { return new Player("error", 100, "white"); }
+	if (winningPlayer.first == "error") { return new Player("error", 100, "white", new HumanStrategy()); }
 
 	// handles a drawn game
 	if (winningPlayer.first == "tie") 
 	{ 
 		cout << "It's a tie" << endl;
-		return new Player("Tie", 100, "black"); 
+		return new Player("Tie", 100, "black", new HumanStrategy()); 
 	}
 
 	Player* winner = NULL;
 
-	for (unsigned int i = 1; i < players.size(); i++)
+	for (unsigned int i = 0; i < players.size(); i++)
 	{
 		if (players.at(i)->GetName() == winningPlayer.first)
 			winner = players.at(i);
@@ -923,4 +971,60 @@ string TieBreaker(Map* map, vector<Player*> players, string first, string second
 	}
 
 	return "error";
+}
+
+void StrategyDriver(){
+	cout << "Greed players choose cards with build or destroy\n";
+	Player* player = new Player("greed", 10, "blue", new GreedyStrategy());
+	Deck* deck = new Deck("greed");
+	Hand* boardHand = new Hand(deck);
+	boardHand->PrintHand();
+
+	char input = player->GetStrategy()->selectCardFromHand(boardHand, player->GetName(), player->GetCoins());
+	pair<Card*, int> card_cost = boardHand->Exchange(input, player->GetCoins(), deck);
+
+	delete deck, boardHand, player;
+
+	cout << "\nModerate players choose cards with move or add\n";
+	player = new Player("moderate", 10, "blue", new ModerateStrategy());
+	deck = new Deck("moderate");
+	boardHand = new Hand(deck);
+	boardHand->PrintHand();
+
+	input = player->GetStrategy()->selectCardFromHand(boardHand, player->GetName(), player->GetCoins());
+	card_cost = boardHand->Exchange(input, player->GetCoins(), deck);
+
+	delete deck, boardHand;
+
+	deck = new Deck("moderate");
+	boardHand = new Hand(deck);
+	string testerInput;
+	cout << "\nThe moderate player remains and the limited deck has been reshuffled";
+	boardHand->PrintHand();
+	cout << "\n\nEnter 'greed', 'morederate', or anything else for human to change the strategy used.";
+	cin >> testerInput;
+
+	if (testerInput == "greed") {
+		player->replaceStrategy(new GreedyStrategy());
+	}
+	else if (testerInput == "moderate") {
+		player->replaceStrategy(new ModerateStrategy());
+	}
+	else {
+		player->replaceStrategy(new HumanStrategy());
+	}
+
+	input = player->GetStrategy()->selectCardFromHand(boardHand, player->GetName(), player->GetCoins());
+	card_cost = boardHand->Exchange(input, player->GetCoins(), deck);
+	delete deck, boardHand, player;
+}
+
+
+void SingletonDriver() {
+
+	MapLoader* ml = new MapLoader("game_map.txt");
+
+	Singleton::instance()->SetMap(ml->GetMap());
+
+	Singleton::instance()->GetMap()->PrintMap(); 
 }

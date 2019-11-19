@@ -1,14 +1,16 @@
 #pragma once
+#include "Subject.h"
 #include <iostream>
 #include <vector>
 #include <string>
+
 
 using namespace std;
 
 class Player;
 
 // Card class 
-class Card 
+class Card : public Subject
 {
 private:
     string resource;
@@ -49,6 +51,7 @@ private:
 public:
     Deck(int num_players);
 	Deck();
+	Deck(string driverTest);
     ~Deck(); 
 	vector<Card*>* GetDeck();
     Card* draw(); 
@@ -56,7 +59,7 @@ public:
 };
 
 //Hand Class 
-class Hand {
+class Hand : public Subject {
 private:
 	// pay the associated coin cost for that card (0,1,1,2,2,3)
 	vector<Card*>* hand;
