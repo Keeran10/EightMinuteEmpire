@@ -371,6 +371,7 @@ Deck::Deck(string driverTest)
 // sending pair rather than the card object seemed efficient at the time of implementation
 pair<string, int> Card::ReadCardAction()
 {
+
 	pair<string, int> read = { "default", 0 };
 
 	if (this->AND) return this->ReadCardActionAND();
@@ -397,6 +398,13 @@ pair<string, int> Card::ReadCardAction()
 		read.second = this->add;
 		return read;
 	}
+	// build a city
+	if (this->action == "build city")
+	{
+		read.first = "build";
+		read.second = 1;
+		return read;
+	}
 	// destroy an army
 	if (this->destroy)
 	{
@@ -404,13 +412,7 @@ pair<string, int> Card::ReadCardAction()
 		read.second = 1;
 		return read;
 	}
-	// build a city
-	if (this->build)
-	{
-		read.first = "build";
-		read.second = 1;
-		return read;
-	}
+	
 
 	return read;
 }
@@ -445,10 +447,10 @@ pair<string, int> Card::ReadCardActionAND()
 {
 	pair<string, int> read = { "default", 0 };
 
-	if (this->destroy && this->add != 0)
+	if (this->action == "destroy 1 army AND add 1 army")
 	{
 		read.first = "add_and_destroy";
-		read.second = this->add;
+		read.second = 1;
 		return read;
 	}
 
