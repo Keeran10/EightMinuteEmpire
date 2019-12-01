@@ -44,6 +44,36 @@ public:
 	inline bool GetAND() { return AND; }
 };
 
+class ForestCard : public Card {
+public:
+	ForestCard(string action, int move, int add, bool build, bool destroy, bool isFivePlayer, bool by_ship, bool OR, bool AND);
+};
+
+class CarrotCard : public Card {
+public:
+	CarrotCard(string action, int move, int add, bool build, bool destroy, bool isFivePlayer, bool by_ship, bool OR, bool AND);
+};
+
+class AnvilCard : public Card {
+public:
+	AnvilCard(string action, int move, int add, bool build, bool destroy, bool isFivePlayer, bool by_ship, bool OR, bool AND);
+};
+
+class OreCard : public Card {
+public:
+	OreCard(string action, int move, int add, bool build, bool destroy, bool isFivePlayer, bool by_ship, bool OR, bool AND);
+};
+
+class CrystalCard : public Card {
+public:
+	CrystalCard(string action, int move, int add, bool build, bool destroy, bool isFivePlayer, bool by_ship, bool OR, bool AND);
+};
+
+class WildCard : public Card {
+public:
+	WildCard(string action, int move, int add, bool build, bool destroy, bool isFivePlayer, bool by_ship, bool OR, bool AND);
+};
+
 //Deck Class
 class Deck {
 private:
