@@ -354,9 +354,6 @@ void Map::PrintPlayerRegions(string name)
 
 			if (region_pair.second->GetAssets() < assets)
 			{
-				//region_pair.second->SetAssets(assets);
-				//region_pair.second->SetOwner(name);
-
 				this->GetRegion(region_pair.second->GetId())->SetOwner(name);
 				this->GetRegion(region_pair.second->GetId())->SetAssets(assets);
 
@@ -433,6 +430,65 @@ void Map::PrintMap() {
 			}
 
 			std::cout << std::endl;
+		}
+	}
+}
+
+bool Map::AutoDestruction(string name)
+{
+	for (auto cit = continents->begin(); cit != continents->end(); cit++)
+	{
+		Continent continent = cit->second;
+
+		for (std::pair<int, Region*> region_pair : continent.GetRegions())
+		{
+			int count_armies = region_pair.second->CountArmies(name);
+	
+			if (count_armies > 0)
+			{
+				vector<Army*>* armies = this->GetRegion(region_pair.second->GetId())->GetArmies();
+
+				for (int i = 0; i < armies->size(); i++)
+				{
+					if ((*armies)[i]->GetOwner() != name)
+					{
+						this->GetRegion(region_pair.second->GetId())->GetArmies()->erase(
+							this->GetRegion(region_pair.second->GetId())->GetArmies()->begin() + i);
+
+						cout << "Successfully destroyed army belonging to " << (*armies)[i]->GetOwner() << " on region " << 
+							region_pair.second->GetId() << endl;
+						return true;
+					}	
+				}
+			}
+		}
+	}
+	return false;
+}
+
+void Map::AutoBuild(string name, string color)
+{
+	for (auto cit = continents->begin(); cit != continents->end(); cit++)
+	{
+		Continent continent = cit->second;
+
+		for (std::pair<int, Region*> region_pair : continent.GetRegions())
+		{
+			int count_armies = region_pair.second->CountArmies(name);
+
+			if (count_armies > 0)
+			{
+				vector<Army*> armies = *this->GetRegion(region_pair.second->GetId())->GetArmies();
+
+				for (int i = 0; i < armies.size(); i++)
+				{
+					if (armies[i]->GetOwner() == name) {
+						this->GetRegion(region_pair.second->GetId())->SetCity(new City(color, name));
+						cout << "Successfully built a city on region " << region_pair.second->GetId() << endl;
+						return;
+					}
+				}
+			}
 		}
 	}
 }
