@@ -8,6 +8,9 @@
 #include "MapLoader.h"
 #include "GameObservers.h"
 #include <random>
+using std::cout;
+using std::endl;
+using std::cin;
 
 void UserPlaysDriver();
 Player* SetupPhase(Map* map, vector<Player*> players, Deck* deck, Hand* boardHand);
@@ -21,17 +24,22 @@ int ScoreContinents(Map* map, Player* player);
 string TieBreaker(Map* map, vector<Player*> players, string first, string second);
 void StrategyDriver();
 void SingletonDriver();
+void SingleGameModeDriver();
+void TournamentModeDriver();
 
 const static int STARTING_REGION = 12;
+static bool isSingleMode = false;
+static bool isTournamentMode = false;
 
 // Map is chosen, player info is set and the game starts
 int main()
 {
 	MapLoader* ml;
 	Map* map;
+
 	do {
 		std::cout << "Welcome to Eight Minute Empire!\n";
-		std::cout << "Enter [d] for strategy driver and [s] for singleton driver or anything else to play.\n";
+		std::cout << "Enter [s] for single game mode or [t] for tournament game mode.\n";
 		char c = 'a';
 		cin >> c;
 		if (c == 'd') {
@@ -39,23 +47,24 @@ int main()
 			return 0;
 		}
 		else if (c == 's') {
-			SingletonDriver();
-			return 0;
+			isSingleMode = true;
 		}
-		else {
+		else if (c == 't') {
+			isTournamentMode = true;
+		}
 
-			string map_file = "invalid";
-			do {
-				cout << "Please enter your selected game map file from the directory (i.e. game_map.txt): ";
-				cin >> map_file;
-			} while (map_file == "invalid");
-			// cout the maps
-			//please select a map
-			//cin map by number
-			ml = new MapLoader(map_file);
-			Singleton::instance()->SetMap(ml->GetMap());
-			map = ml->GetMap();
-		}
+		string map_file = "invalid";
+		do {
+			cout << "Please enter your selected game map file from the directory (i.e. game_map.txt): ";
+			cin >> map_file;
+		} while (map_file == "invalid");
+		// cout the maps
+		//please select a map
+		//cin map by number
+		ml = new MapLoader(map_file);
+		Singleton::instance()->SetMap(ml->GetMap());
+		map = ml->GetMap();
+
 	} while (!ml->getIsValid());
 
 	
@@ -92,19 +101,22 @@ int main()
 		players.push_back(new Player("CPU" + std::to_string(i), (int)dist(mt), colors.at(i), strategy));
 	}
 
-	string name = "";
-	int age = 0;
+	if (isSingleMode)
+	{
+		string name = "";
+		int age = 0;
 
-	std::cout << "Please enter the player name: ";
-	std::cin >> name;
+		std::cout << "Please enter the player name: ";
+		std::cin >> name;
 
-	do {
-		std::cout << "Please enter the player age (5-100): ";
-		std::cin >> age;
-	} while (age > 100 || age < 5);
+		do {
+			std::cout << "Please enter the player age (5-100): ";
+			std::cin >> age;
+		} while (age > 100 || age < 5);
 
-	Player* player =new Player(name, age, "blue", new HumanStrategy());
-	players.push_back(player);
+		Player* player = new Player(name, age, "blue", new HumanStrategy());
+		players.push_back(player);
+	}
 
 	std::cout << "Here is the map and the players you will be playing with\n\n";
 
@@ -118,7 +130,7 @@ int main()
 
 	PlayGame(map, players, deck);
 
-	delete ml, player, deck;
+	delete ml, deck;
 	players.clear();
 	players.shrink_to_fit();
 	return 0;
@@ -272,16 +284,23 @@ Player* SetupPhase(Map* map, vector<Player*> players, Deck* deck, Hand* boardHan
 	for (int i = 0; i < players.size(); i++) {
 		players[i]->SetCoins(coins);
 	}
+	
+	int bid = 0;
+	
+	if (isSingleMode) 
+	{
+		do {
+			std::cout << "\nPlease enter your bid (0-" + std::to_string(players.back()->GetCoins()) + "): ";
+			std::cin >> bid;
+		} while (bid < 0 || bid > players.back()->GetCoins());
+	}
 
-	int bid;
-	do {
-		std::cout << "\nPlease enter your bid (0-" + std::to_string(players.back()->GetCoins()) + "): ";
-		std::cin >> bid;
-	} while (bid < 0 || bid > players.back()->GetCoins());
 	for (int i = 0; i < players.size() - 1; i++) {
 		players[i]->GetBiddingFacility()->RandomizeBid(coins);
 	}
-	players.back()->GetBiddingFacility()->SetBid(bid);
+
+	if(isSingleMode)
+		players.back()->GetBiddingFacility()->SetBid(bid);
 
 	PrintBids(players);
 
@@ -354,7 +373,7 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 				cout << winner->GetName() << endl;
 				break;
 			}
-			else 
+			else
 			{
 				cout << "Unexpected error. Abort..." << endl;
 				break;
@@ -389,105 +408,55 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 		pair<string, int> readCard = card->ReadCardAction();
 
 		string action = readCard.first;
-		
+
 		char take{};
-		
-		if (action == "move_or_add")
+
+		if(startingPlayer->GetStrategy()->getName() == "human")
 		{
-			do {
-				cout << "\nWould you like to take the above action or ignore it? (y/n): ";
-				cin >> take;
-
-				if (take == 'n' || take == 'N')
-				{
-					break; // ignore action
-				}
-
-				int or_action = readCard.second;
-				int add_action = or_action % 10;
-				int move_action = (or_action - add_action) / 10;
-				string decision = "a";
-
-				do {
-					cout << "Do you want to move " << move_action << " or add " << add_action << " armies? (move|add): ";
-					cin >> decision;
-				} while (decision != "move" && decision != "add");
-				
-				or_invoked = true;
-				
-				if (decision == "move")
-				{
-					action = "move_by_land";
-					readCard.second = move_action;
-					break;
-				}
-				else
-				{
-					action = "add";
-					readCard.second = add_action;
-					break;
-				}
-
-				break;
-
-			} while (take == 'y' || take == 'n');
-		}
-
-		if (action == "build_or_destroy")
-		{
-			do {
-				cout << "\nWould you like to take the above action or ignore it? (y/n): ";
-				cin >> take;
-
-				if (take == 'n' || take == 'N')
-				{
-					break; // ignore action
-				}
-
-				int or_action = readCard.second;
-				string decision = "a";
-
-				do {
-					cout << "Do you want to build or destroy? (build|destroy): ";
-					cin >> decision;
-				} while (decision != "build" && decision != "destroy");
-
-				or_invoked = true;
-
-				if (decision == "destroy")
-				{
-					action = "destroy";
-					break;
-				}
-				else
-				{
-					action = "build";
-					break;
-				}
-
-				break;
-
-			} while (take == 'y' || take == 'n');
-		}
-
-		if (action == "add_and_destroy")
-		{
-			cout << "\nWould you like to take the above action or ignore it? (y/n): ";
-			cin >> take;
-
-			if (take == 'n' || take == 'N')
+			if (action == "move_or_add")
 			{
-				
+				do {
+					cout << "\nWould you like to take the above action or ignore it? (y/n): ";
+					cin >> take;
+
+					if (take == 'n' || take == 'N')
+					{
+						break; // ignore action
+					}
+
+					int or_action = readCard.second;
+					int add_action = or_action % 10;
+					int move_action = (or_action - add_action) / 10;
+					string decision = "a";
+
+					do {
+						cout << "Do you want to move " << move_action << " or add " << add_action << " armies? (move|add): ";
+						cin >> decision;
+					} while (decision != "move" && decision != "add");
+
+					or_invoked = true;
+
+					if (decision == "move")
+					{
+						action = "move_by_land";
+						readCard.second = move_action;
+						break;
+					}
+					else
+					{
+						action = "add";
+						readCard.second = add_action;
+						break;
+					}
+
+					break;
+
+				} while (take == 'y' || take == 'n');
 			}
-			else
-				and_invoked = true;
-		}
 
-		if (action == "move_by_sea" || action == "move_by_land")
-		{
-
-			do {
-				if (!or_invoked) {
+			if (action == "build_or_destroy")
+			{
+				do {
 					cout << "\nWould you like to take the above action or ignore it? (y/n): ";
 					cin >> take;
 
@@ -495,211 +464,343 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 					{
 						break; // ignore action
 					}
-				}
 
-				int move_count = readCard.second;
+					int or_action = readCard.second;
+					string decision = "a";
 
-				while (move_count > 0 && take != 'n')
-				{
-					int source = -1;
-					int destination = -1;
-					int armies_to_move = -1;
+					do {
+						cout << "Do you want to build or destroy? (build|destroy): ";
+						cin >> decision;
+					} while (decision != "build" && decision != "destroy");
 
-					for(Player* player : players)
-						map->PrintPlayerRegions(player->GetName()); 
+					or_invoked = true;
 
-					do
-					{
-						cout << "\nMove armies from region: ";
-						cin >> source;
-					} while (source <= 0);
-					do
-					{
-						map->GetRegion(source)->PrintAdjacents();
-						cout << "\n\nto region: ";
-						cin >> destination;
-					} while (destination <= 0);
-					do
-					{
-						cout << "\nNumber of armies to move? Out of a possible " << move_count << ": ";
-						cin >> armies_to_move;
-					} while (armies_to_move <= 0 || armies_to_move > move_count);
-
-					int success = startingPlayer->MoveArmies(map, source, destination, armies_to_move, action);
-
-					move_count = move_count - success;
-
-					if (move_count == 0) break;
-
-					cout << "Move more armies or yield your turn? (y/n): ";
-					cin >> take;
-				}
-				break;
-				
-			} while (take == 'y' || take == 'n');
-		}
-
-		if (action == "add" || and_invoked)
-		{
-			do {
-				if (!or_invoked && !and_invoked) {
-					cout << "\nWould you like to take the above action or ignore it? (y/n): ";
-					cin >> take;
-
-					if (take == 'n' || take == 'N')
-					{
-						break; // ignore action
-					}
-				}
-				if (and_invoked) {
-					cout << "\nWould you like to add armies to a region? (y/n): ";
-					cin >> take;
-
-					if (take == 'n' || take == 'N')
+					if (decision == "destroy")
 					{
 						action = "destroy";
 						break;
 					}
-				}
-
-				int add_count = readCard.second;
-
-				while (add_count > 0 && take != 'n')
-				{
-					int source = -1;
-					int armies_to_add = -1;
-
-					for (Player* player : players)
-						map->PrintPlayerRegions(player->GetName());
-
-					do
+					else
 					{
-						cout << "\nChoose a region with at least 1 city to add armies: ";
-						cin >> source;
-					} while (source <= 0);
-					do
-					{
-						cout << "\nNumber of armies to add? Out of a possible " << add_count << ": ";
-						cin >> armies_to_add;
-					} while (armies_to_add <= 0 || armies_to_add > add_count);
-
-					int success = startingPlayer->AddArmies(map, map->GetRegion(source), armies_to_add);
-
-					add_count = add_count - success;
-
-					if (add_count == 0) break;
-
-					cout << "Add more armies or yield your turn? (y/n): ";
-					cin >> take;
-				}
-				break;
-			} while (take == 'y' || take == 'n');
-		}
-
-		if (action == "destroy")
-		{
-			do {
-				if (!or_invoked && !and_invoked) {
-					cout << "\nWould you like to take the above action or ignore it? (y/n): ";
-					cin >> take;
-
-					if (take == 'n' || take == 'N')
-					{
-						break; // ignore action
-					}
-				}
-				if (and_invoked) {
-					cout << "\nWould you like to destroy an army on your region? (y/n): ";
-					cin >> take;
-
-					if (take == 'n' || take == 'N')
-					{
+						action = "build";
 						break;
 					}
-				}
 
-				int destroy_army = readCard.second;
+					break;
 
-				if (and_invoked)
-					destroy_army = 1;
+				} while (take == 'y' || take == 'n');
+			}
 
-				while (destroy_army > 0 && take != 'n')
+			if (action == "add_and_destroy")
+			{
+				cout << "\nWould you like to take the above action or ignore it? (y/n): ";
+				cin >> take;
+
+				if (take == 'n' || take == 'N')
 				{
-					int source = -1;
-					string enemy = "a";
 
-					for (Player* player : players)
-						map->PrintPlayerRegions(player->GetName());
-
-					do
-					{
-						cout << "\nWhose army do you wish to destroy? ";
-						cin >> enemy;
-					} while (enemy != "CPU0" && enemy != "CPU1" && enemy != "CPU2" && enemy != "CPU3" && enemy != "CPU4");
-
-					do
-					{
-						cout << "\nFrom which region? ";
-						cin >> source;
-					} while (source <= 0);
-
-					int success = startingPlayer->DestroyArmy(map, source, enemy);
-
-					destroy_army = destroy_army - success;
-
-					if (destroy_army == 0) break;
-
-					cout << "Destroy an army or yield your turn? (y/n): ";
-					cin >> take;
 				}
-				break;
-			} while (take == 'y' || take == 'n');
-		}
-		if (action == "build")
-		{
-			do {
-				if (!or_invoked) {
-					cout << "\nWould you like to take the above action or ignore it? (y/n): ";
-					cin >> take;
+				else
+					and_invoked = true;
+			}
 
-					if (take == 'n' || take == 'N')
-					{
-						break; // ignore action
+			if (action == "move_by_sea" || action == "move_by_land")
+			{
+
+				do {
+					if (!or_invoked) {
+						cout << "\nWould you like to take the above action or ignore it? (y/n): ";
+						cin >> take;
+
+						if (take == 'n' || take == 'N')
+						{
+							break; // ignore action
+						}
 					}
-				}
 
-				int build_city = readCard.second;
+					int move_count = readCard.second;
 
-				while (build_city > 0 && take != 'n')
-				{
-					int source = -1;
-
-					for (Player* player : players)
-						map->PrintPlayerRegions(player->GetName());
-
-					do
+					while (move_count > 0 && take != 'n')
 					{
-						cout << "\nChoose one of your regions to build a city: ";
-						cin >> source;
-					} while (source <= 0);
+						int source = -1;
+						int destination = -1;
+						int armies_to_move = -1;
+
+						for (Player* player : players)
+							map->PrintPlayerRegions(player->GetName());
+
+						do
+						{
+							cout << "\nMove armies from region: ";
+							cin >> source;
+						} while (source <= 0);
+						do
+						{
+							map->GetRegion(source)->PrintAdjacents();
+							cout << "\n\nto region: ";
+							cin >> destination;
+						} while (destination <= 0);
+						do
+						{
+							cout << "\nNumber of armies to move? Out of a possible " << move_count << ": ";
+							cin >> armies_to_move;
+						} while (armies_to_move <= 0 || armies_to_move > move_count);
+
+						int success = startingPlayer->MoveArmies(map, source, destination, armies_to_move, action);
+
+						move_count = move_count - success;
+
+						if (move_count == 0) break;
+
+						cout << "Move more armies or yield your turn? (y/n): ";
+						cin >> take;
+					}
+					break;
+
+				} while (take == 'y' || take == 'n');
+			}
+
+			if (action == "add" || and_invoked)
+			{
+				do {
+					if (!or_invoked && !and_invoked) {
+						cout << "\nWould you like to take the above action or ignore it? (y/n): ";
+						cin >> take;
+
+						if (take == 'n' || take == 'N')
+						{
+							break; // ignore action
+						}
+					}
+					if (and_invoked) {
+						cout << "\nWould you like to add armies to a region? (y/n): ";
+						cin >> take;
+
+						if (take == 'n' || take == 'N')
+						{
+							action = "destroy";
+							break;
+						}
+					}
+
+					int add_count = readCard.second;
+
+					while (add_count > 0 && take != 'n')
+					{
+						int source = -1;
+						int armies_to_add = -1;
+
+						for (Player* player : players)
+							map->PrintPlayerRegions(player->GetName());
+
+						do
+						{
+							cout << "\nChoose a region with at least 1 city to add armies: ";
+							cin >> source;
+						} while (source <= 0);
+						do
+						{
+							cout << "\nNumber of armies to add? Out of a possible " << add_count << ": ";
+							cin >> armies_to_add;
+						} while (armies_to_add <= 0 || armies_to_add > add_count);
+
+						int success = startingPlayer->AddArmies(map, map->GetRegion(source), armies_to_add);
+
+						add_count = add_count - success;
+
+						if (add_count == 0) break;
+
+						cout << "Add more armies or yield your turn? (y/n): ";
+						cin >> take;
+					}
+					break;
+				} while (take == 'y' || take == 'n');
+			}
+
+			if (action == "destroy")
+			{
+				do {
+					if (!or_invoked && !and_invoked) {
+						cout << "\nWould you like to take the above action or ignore it? (y/n): ";
+						cin >> take;
+
+						if (take == 'n' || take == 'N')
+						{
+							break; // ignore action
+						}
+					}
+					if (and_invoked) {
+						cout << "\nWould you like to destroy an army on your region? (y/n): ";
+						cin >> take;
+
+						if (take == 'n' || take == 'N')
+						{
+							break;
+						}
+					}
+
+					int destroy_army = readCard.second;
+
+					if (and_invoked)
+						destroy_army = 1;
+
+					while (destroy_army > 0 && take != 'n')
+					{
+						int source = -1;
+						string enemy = "a";
+
+						for (Player* player : players)
+							map->PrintPlayerRegions(player->GetName());
+
+						do
+						{
+							cout << "\nWhose army do you wish to destroy? ";
+							cin >> enemy;
+						} while (enemy != "CPU0" && enemy != "CPU1" && enemy != "CPU2" && enemy != "CPU3" && enemy != "CPU4");
+
+						do
+						{
+							cout << "\nFrom which region? ";
+							cin >> source;
+						} while (source <= 0);
+
+						int success = startingPlayer->DestroyArmy(map, source, enemy);
+
+						destroy_army = destroy_army - success;
+
+						if (destroy_army == 0) break;
+
+						cout << "Destroy an army or yield your turn? (y/n): ";
+						cin >> take;
+					}
+					break;
+				} while (take == 'y' || take == 'n');
+			}
+			if (action == "build")
+			{
+				do {
+					if (!or_invoked) {
+						cout << "\nWould you like to take the above action or ignore it? (y/n): ";
+						cin >> take;
+
+						if (take == 'n' || take == 'N')
+						{
+							break; // ignore action
+						}
+					}
+
+					int build_city = readCard.second;
+
+					while (build_city > 0 && take != 'n')
+					{
+						int source = -1;
+
+						for (Player* player : players)
+							map->PrintPlayerRegions(player->GetName());
+
+						do
+						{
+							cout << "\nChoose one of your regions to build a city: ";
+							cin >> source;
+						} while (source <= 0);
 
 
-					int success = startingPlayer->BuildCity(map, source);
+						int success = startingPlayer->BuildCity(map, source);
 
-					build_city = build_city - success;
+						build_city = build_city - success;
 
-					if (build_city == 0) break;
+						if (build_city == 0) break;
 
-					cout << "Build a city or yield your turn? (y/n): ";
-					cin >> take;
-				}
-				break;
-			} while (take == 'y' || take == 'n');
+						cout << "Build a city or yield your turn? (y/n): ";
+						cin >> take;
+					}
+					break;
+				} while (take == 'y' || take == 'n');
+			}
+
+			if (action == "default")
+			{
+				cout << "Something went wrong. Abort..." << endl;
+			}
 		}
-		
-		if(action == "default")
+
+		else if (startingPlayer->GetStrategy()->getName() != "human")
 		{
-			cout << "Something went wrong. Abort..." << endl;
+			/**
+			(2) greedy computer player that focuses on building cities or destroying opponents, 
+			(3) a moderate that control a region in which it just needs to occupy it with more armies than the opponents.
+			/**/
+
+			if (action == "move_or_add")
+			{
+				int or_action = readCard.second;
+				int add_action = or_action % 10;
+				int move_action = (or_action - add_action) / 10;
+				bool hasMoved = false;
+				int success = 0;
+
+				// Greedy wants more space to build city; therefore, it will move armies to cover more regions.
+				success = startingPlayer->AutoMove(map, move_action, action);
+				if (success > 0)
+					hasMoved = true;
+				
+				// make sure it has city, then add armies there. 
+				if(!hasMoved)
+					startingPlayer->AutoAdd(map, add_action);
+			}
+
+			if (action == "build_or_destroy")
+			{
+				// if you have enemy armies in one of your regions, destroy it.
+				bool destroyedArmy = map->AutoDestruction(startingPlayer->GetName());
+				
+				// otherwise build a city
+				if (!destroyedArmy)
+					map->AutoBuild(startingPlayer->GetName(), startingPlayer->GetColor());
+			}
+
+			if (action == "add_and_destroy")
+			{
+				int add_count = readCard.second;
+
+				// if you have enemy armies in one of your regions, destroy it.
+				// if you have a city in one of your regions, add armies there.
+				map->AutoDestruction(startingPlayer->GetName());
+				startingPlayer->AutoAdd(map, add_count);
+			}
+
+			if (action == "move_by_sea" || action == "move_by_land")
+			{
+				int move_count = readCard.second;
+
+				// greedy will spread its armies as much as possible. 
+				// for loop with 1 moved army each time.
+				// get random region with army, move to adjacent.
+				int success = startingPlayer->AutoMove(map, move_count, action);
+			}
+
+			if (action == "add")
+			{
+				int add_count = readCard.second;
+
+				// make sure it has city, then add armies there. 
+				startingPlayer->AutoAdd(map, add_count);
+			}
+
+			if (action == "destroy")
+			{
+				map->AutoDestruction(startingPlayer->GetName());
+			}
+
+			if (action == "build")
+			{
+				map->AutoBuild(startingPlayer->GetName(), startingPlayer->GetColor());
+			}
+
+			if (action == "default")
+			{
+				cout << "Something went wrong. Abort..." << endl;
+			}
 		}
 
 		if (position == players.size() - 1)
@@ -836,7 +937,7 @@ int ScoreGoods(Map* map, Player* player)
 	int crystal = player->CountResources("CRYSTAL");
 	int wild = player->CountResources("WILD");
 
-	if (wild > 0) 
+	if (wild > 0 && player->GetStrategy()->getName() == "human") 
 	{
 		string w = "resource";
 
@@ -858,6 +959,36 @@ int ScoreGoods(Map* map, Player* player)
 			wild--;
 
 		} while (wild > 0);
+	}
+	else if (wild > 0 && player->GetStrategy()->getName() != "human")
+	{
+		do
+		{
+			if (3 == forest) forest++;
+			else if (3 == carrot) carrot++;
+			else if (3 == anvil) anvil++;
+			else if (3 == ore) ore++;
+			else if (3 == crystal) crystal++;
+			else if (2 == forest) forest++;
+			else if (2 == carrot) carrot++;
+			else if (2 == anvil) anvil++;
+			else if (2 == ore) ore++;
+			else if (2 == crystal) crystal++;
+			else if (1 == forest) forest++;
+			else if (1 == carrot) carrot++;
+			else if (1 == anvil) anvil++;
+			else if (1 == ore) ore++;
+			else if (1 == crystal) crystal++;
+			else if (0 == forest) forest++;
+			else if (0 == carrot) carrot++;
+			else if (0 == anvil) anvil++;
+			else if (0 == ore) ore++;
+			else if (0 == crystal) crystal++;
+
+			wild--;
+
+		} while (wild > 0);
+
 	}
 
 	if (forest >= 4){
@@ -916,7 +1047,7 @@ string TieBreaker(Map* map, vector<Player*> players, string first, string second
 	int coins1 = player1->GetCoins();
 	int coins2 = player2->GetCoins();
 
-	cout << "Coins tiebreak !" << endl;
+	cout << "\nCoins tiebreak !" << endl;
 	cout << first << ": " << coins1 << " coins." << endl;
 	cout << second << ": " << coins2 << " coins." << endl;
 
@@ -1019,7 +1150,6 @@ void StrategyDriver(){
 	delete deck, boardHand, player;
 }
 
-
 void SingletonDriver() {
 
 	MapLoader* ml = new MapLoader("game_map.txt");
@@ -1027,4 +1157,12 @@ void SingletonDriver() {
 	Singleton::instance()->SetMap(ml->GetMap());
 
 	Singleton::instance()->GetMap()->PrintMap(); 
+}
+
+void SingleGameModeDriver()
+{
+}
+
+void TournamentModeDriver()
+{
 }

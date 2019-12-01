@@ -269,6 +269,72 @@ int Player::DestroyArmy(Map* map, int region_id, string enemy)
 
 
 
+void Player::AutoAdd(Map* map, int count)
+{
+	for (auto cit = map->GetContinentsPtr()->begin(); cit != map->GetContinentsPtr()->end(); cit++)
+	{
+		Continent continent = cit->second;
+
+		for (std::pair<int, Region*> region_pair : continent.GetRegions())
+		{
+			int count_cities = region_pair.second->CountCities(this->name);
+
+			if (count_cities > 0)
+			{
+				this->PlaceNewArmies(map, map->GetRegion(region_pair.second->GetId()), count);
+				return;
+			}
+		}
+	}
+}
+
+int Player::AutoMove(Map* map, int count, string action)
+{
+
+	while (count != 0)
+	{
+		for (auto cit = map->GetContinentsPtr()->begin(); cit != map->GetContinentsPtr()->end(); cit++)
+		{
+			if (count == 0)
+				break;
+
+			Continent continent = cit->second;
+
+			for (std::pair<int, Region*> region_pair : continent.GetRegions())
+			{
+				if (count == 0)
+					break;
+
+				int count_armies = region_pair.second->CountArmies(this->name);
+
+				if (count_armies > 0)
+				{
+					vector<pair<Region, int>>* adjacents = map->GetRegion(region_pair.second->GetId())->GetAdjacentsPtr();
+
+					int moving_cost = 0;
+
+					if(adjacents)
+						moving_cost = adjacents->at(0).second;
+						
+					if (moving_cost == 1 && action == "move_by_land")
+						MoveOverLand(map, map->GetRegion(region_pair.second->GetId()), map->GetRegion(adjacents->at(0).first.GetId()));
+
+					else if (moving_cost == 3 && action == "move_by_sea")
+						MoveOverWater(map, map->GetRegion(region_pair.second->GetId()), map->GetRegion(adjacents->at(0).first.GetId()));
+
+					if(moving_cost != 0)
+						count--;
+				}
+			}
+		}
+	}
+
+	if (count == 0)
+		return 1;
+	else
+		return 0;
+}
+
 string Player::PayCoin()
 {
 	return "PayCoin() implementation";

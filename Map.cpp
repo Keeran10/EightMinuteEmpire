@@ -437,6 +437,65 @@ void Map::PrintMap() {
 	}
 }
 
+bool Map::AutoDestruction(string name)
+{
+	for (auto cit = continents->begin(); cit != continents->end(); cit++)
+	{
+		Continent continent = cit->second;
+
+		for (std::pair<int, Region*> region_pair : continent.GetRegions())
+		{
+			int count_armies = region_pair.second->CountArmies(name);
+	
+			if (count_armies > 0)
+			{
+				vector<Army*>* armies = this->GetRegion(region_pair.second->GetId())->GetArmies();
+
+				for (int i = 0; i < armies->size(); i++)
+				{
+					if ((*armies)[i]->GetOwner() != name)
+					{
+						this->GetRegion(region_pair.second->GetId())->GetArmies()->erase(
+							this->GetRegion(region_pair.second->GetId())->GetArmies()->begin() + i);
+
+						cout << "Successfully destroyed army belonging to " << (*armies)[i]->GetOwner() << " on region " << 
+							region_pair.second->GetId() << endl;
+						return true;
+					}	
+				}
+			}
+		}
+	}
+	return false;
+}
+
+void Map::AutoBuild(string name, string color)
+{
+	for (auto cit = continents->begin(); cit != continents->end(); cit++)
+	{
+		Continent continent = cit->second;
+
+		for (std::pair<int, Region*> region_pair : continent.GetRegions())
+		{
+			int count_armies = region_pair.second->CountArmies(name);
+
+			if (count_armies > 0)
+			{
+				vector<Army*> armies = *this->GetRegion(region_pair.second->GetId())->GetArmies();
+
+				for (int i = 0; i < armies.size(); i++)
+				{
+					if (armies[i]->GetOwner() == name) {
+						this->GetRegion(region_pair.second->GetId())->SetCity(new City(color, name));
+						cout << "Successfully built a city on region " << region_pair.second->GetId() << endl;
+						return;
+					}
+				}
+			}
+		}
+	}
+}
+
 void MapDriver() 
 {
 	int a(1), b(1), c(2), d(3), e(4), f(5), g(2), h(6);
