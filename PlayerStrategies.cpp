@@ -23,6 +23,10 @@ char HumanStrategy::selectCardFromHand(Hand* hand, string name, int coins) {
 	return input;
 }
 
+void HumanStrategy::ExecuteGameplay()
+{
+}
+
 GreedyStrategy::GreedyStrategy()
 {
 }
@@ -48,6 +52,10 @@ char GreedyStrategy::selectCardFromHand(Hand* hand, string name, int coins)
 	return input;
 }
 
+void GreedyStrategy::ExecuteGameplay()
+{
+}
+
 ModerateStrategy::ModerateStrategy()
 {
 }
@@ -71,6 +79,10 @@ char ModerateStrategy::selectCardFromHand(Hand* hand, string name, int coins)
 	int input = getBestMove(possibleMoves, coins);
 
 	return input;
+}
+
+void ModerateStrategy::ExecuteGameplay()
+{
 }
 
 char getBestMove(vector<int> possibleMoves, int coins) {

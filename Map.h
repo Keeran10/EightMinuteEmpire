@@ -56,6 +56,7 @@ public:
 	int GetId() const;
 	int GetContinentId();
 	vector<vertex> GetAdjacents();
+	inline vector<vertex>* GetAdjacentsPtr() { return adjacents; }
 	void AddAdjacent(Region region, int cost);
 	int CountCities(string name);
 	void PrintAdjacents();
@@ -107,6 +108,7 @@ public:
 	Map();
 	~Map();
 	map<int, Continent> GetContinents();
+	inline map<int, Continent>* GetContinentsPtr() { return continents; }
 	static Map* getInstance(); //not sure what params to pass (added for part 4 singleton)
 	static void resetInstanceOfMap(); //added for part 4 singleton
 	void AddRegion(Region* region);
@@ -117,6 +119,8 @@ public:
 	int CountAllArmies(string name);
 	void PrintPlayerRegions(string name);
 	void PrintMap();
+	bool AutoDestruction(string name);
+	void AutoBuild(string name, string color);
 };
 
 /*
