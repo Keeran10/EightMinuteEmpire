@@ -287,54 +287,45 @@ int Player::AutoAdd(Map* map, int count)
 		}
 	}
 
+	cout << this->name << ", you do not have any cities to add armies." << endl;
+
 	return 0;
 }
 
 int Player::AutoMove(Map* map, int count, string action)
 {
 
-	while (count != 0)
+	for (auto cit = map->GetContinentsPtr()->begin(); cit != map->GetContinentsPtr()->end(); cit++)
 	{
-		for (auto cit = map->GetContinentsPtr()->begin(); cit != map->GetContinentsPtr()->end(); cit++)
+
+		Continent continent = cit->second;
+
+		for (std::pair<int, Region*> region_pair : continent.GetRegions())
 		{
-			if (count == 0)
-				break;
 
-			Continent continent = cit->second;
+			int count_armies = region_pair.second->CountArmies(this->name);
 
-			for (std::pair<int, Region*> region_pair : continent.GetRegions())
+			if (count_armies > 0)
 			{
-				if (count == 0)
-					break;
+				vector<pair<Region, int>>* adjacents = map->GetRegion(region_pair.second->GetId())->GetAdjacentsPtr();
 
-				int count_armies = region_pair.second->CountArmies(this->name);
+				int moving_cost = 0;
 
-				if (count_armies > 0)
-				{
-					vector<pair<Region, int>>* adjacents = map->GetRegion(region_pair.second->GetId())->GetAdjacentsPtr();
-
-					int moving_cost = 0;
-
-					if(adjacents)
-						moving_cost = adjacents->at(0).second;
+				if(adjacents)
+					moving_cost = adjacents->at(0).second;
 						
-					if (moving_cost == 1 && action == "move_by_land")
-						MoveOverLand(map, map->GetRegion(region_pair.second->GetId()), map->GetRegion(adjacents->at(0).first.GetId()));
+				if (moving_cost == 1 && action == "move_by_land")
+					MoveOverLand(map, map->GetRegion(region_pair.second->GetId()), map->GetRegion(adjacents->at(0).first.GetId()));
 
-					else if (moving_cost == 3 && action == "move_by_sea")
-						MoveOverWater(map, map->GetRegion(region_pair.second->GetId()), map->GetRegion(adjacents->at(0).first.GetId()));
+				else if (moving_cost == 3 && action == "move_by_sea")
+					MoveOverWater(map, map->GetRegion(region_pair.second->GetId()), map->GetRegion(adjacents->at(0).first.GetId()));
 
-					if(moving_cost != 0)
-						count--;
-				}
+				if (moving_cost != 0)
+					return 1;
 			}
 		}
 	}
-
-	if (count == 0)
-		return 1;
-	else
-		return 0;
+	return 0;
 }
 
 string Player::PayCoin()
