@@ -72,7 +72,7 @@ class Player : public Subject {
 		int DestroyArmy(Map* map, int region_id, string enemy);
 		inline string GetColor() { return color; }
 		inline void SetColor(string color) { this->color = color; }
-		void AutoAdd(Map* map, int count);
+		int AutoAdd(Map* map, int count);
 		int AutoMove(Map* map, int count, string action);
 		// Functions
 		string PayCoin();

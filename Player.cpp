@@ -269,7 +269,7 @@ int Player::DestroyArmy(Map* map, int region_id, string enemy)
 
 
 
-void Player::AutoAdd(Map* map, int count)
+int Player::AutoAdd(Map* map, int count)
 {
 	for (auto cit = map->GetContinentsPtr()->begin(); cit != map->GetContinentsPtr()->end(); cit++)
 	{
@@ -282,10 +282,12 @@ void Player::AutoAdd(Map* map, int count)
 			if (count_cities > 0)
 			{
 				this->PlaceNewArmies(map, map->GetRegion(region_pair.second->GetId()), count);
-				return;
+				return 1;
 			}
 		}
 	}
+
+	return 0;
 }
 
 int Player::AutoMove(Map* map, int count, string action)

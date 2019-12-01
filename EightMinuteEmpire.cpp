@@ -739,24 +739,39 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 				bool hasMoved = false;
 				int success = 0;
 
-				// Greedy wants more space to build city; therefore, it will move armies to cover more regions.
-				success = startingPlayer->AutoMove(map, move_action, action);
-				if (success > 0)
-					hasMoved = true;
-				
-				// make sure it has city, then add armies there. 
-				if(!hasMoved)
-					startingPlayer->AutoAdd(map, add_action);
+				if (startingPlayer->GetStrategy()->getName() == "greedy")
+				{
+					// Greedy wants more space to build city; therefore, it will move armies to cover more regions.
+					success = startingPlayer->AutoMove(map, move_action, action);
+					if (success > 0)
+						hasMoved = true;
+
+					// make sure it has city, then add armies there. 
+					if (!hasMoved)
+						startingPlayer->AutoAdd(map, add_action);
+				}
+				else
+				{
+					// Moderate wants to occupy region so it'll add armies.
+					success = startingPlayer->AutoAdd(map, add_action);
+				}
 			}
 
 			if (action == "build_or_destroy")
 			{
-				// if you have enemy armies in one of your regions, destroy it.
-				bool destroyedArmy = map->AutoDestruction(startingPlayer->GetName());
-				
-				// otherwise build a city
-				if (!destroyedArmy)
+				if (startingPlayer->GetStrategy()->getName() == "greedy")
+				{
+					// if you have enemy armies in one of your regions, destroy it.
+					bool destroyedArmy = map->AutoDestruction(startingPlayer->GetName());
+
+					// otherwise build a city
+					if (!destroyedArmy)
+						map->AutoBuild(startingPlayer->GetName(), startingPlayer->GetColor());
+				}
+				else
+				{
 					map->AutoBuild(startingPlayer->GetName(), startingPlayer->GetColor());
+				}
 			}
 
 			if (action == "add_and_destroy")
@@ -774,9 +789,12 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 				int move_count = readCard.second;
 
 				// greedy will spread its armies as much as possible. 
-				// for loop with 1 moved army each time.
-				// get random region with army, move to adjacent.
-				int success = startingPlayer->AutoMove(map, move_count, action);
+				// moderate will stay put.
+
+				if (startingPlayer->GetStrategy()->getName() == "greedy")
+					startingPlayer->AutoMove(map, move_count, action);
+				
+				// else do nothing for moderate
 			}
 
 			if (action == "add")

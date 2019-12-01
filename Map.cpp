@@ -354,9 +354,6 @@ void Map::PrintPlayerRegions(string name)
 
 			if (region_pair.second->GetAssets() < assets)
 			{
-				//region_pair.second->SetAssets(assets);
-				//region_pair.second->SetOwner(name);
-
 				this->GetRegion(region_pair.second->GetId())->SetOwner(name);
 				this->GetRegion(region_pair.second->GetId())->SetAssets(assets);
 
