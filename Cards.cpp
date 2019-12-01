@@ -432,7 +432,7 @@ pair<string, int> Card::ReadCardActionOR()
 		return read;
 	}
 
-	if (this->destroy && this->build)
+	if (this->destroy || this->build)
 	{
 		read.first = "build_or_destroy";
 		read.second = 1;
@@ -447,7 +447,7 @@ pair<string, int> Card::ReadCardActionAND()
 {
 	pair<string, int> read = { "default", 0 };
 
-	if (this->action == "destroy 1 army AND add 1 army")
+	if (this->destroy && this->add != 0)
 	{
 		read.first = "add_and_destroy";
 		read.second = 1;

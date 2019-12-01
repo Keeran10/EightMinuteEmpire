@@ -168,16 +168,20 @@ void Continent::CheckController(string name)
 	{
 		this->assets = count;
 		this->owner = name;
+
+		cout << "Continent is controlled by " << name << endl;
 	}
 
 	else if (count == this->assets && this->owner != name)
 	{
 		this->owner = "none";
+		this->assets = 0;
 	}
 
 	else if (count == 0 && this->owner == name) {
 
 		this->owner = "none";
+		this->assets = 0;
 	}
 
 }

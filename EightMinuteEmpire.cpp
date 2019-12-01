@@ -358,9 +358,14 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 	map->Attach(conquerorView);
 
 	char input = 'a';
-	
+	Player* startingPlayer;
+
 	do
 	{
+		startingPlayer = players.at(position);
+		map->Notify();
+		
+
 		Player* winner = ComputeGameScore(map, players);
 
 		if (winner != NULL)
@@ -379,15 +384,11 @@ void PlayerTurnPhase(Map* map, vector<Player*> players, int position, Deck* deck
 				break;
 			}
 		}
-
+		
+		startingPlayer->Notify();
+		
 		bool or_invoked = false;
 		bool and_invoked = false;
-
-		Player* startingPlayer = players.at(position);
-
-		//boardHand->PrintHand();
-		map->Notify();
-		startingPlayer->Notify();
 
 		input = startingPlayer->GetStrategy()->selectCardFromHand(boardHand, startingPlayer->GetName(), startingPlayer->GetCoins());
 
